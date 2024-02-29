@@ -69,16 +69,31 @@ const char *getFileExtension(const char *filename) {
 }
 
 void copyFile(FILE *source, FILE *destination) {
-    char ch;
+    char *buffer;
+    size_t bufferSize = 1024;  // Adjust the buffer size as needed
+
+    // Allocate memory for the buffer
+    buffer = (char *)malloc(bufferSize * sizeof(char));
+
+    if (buffer == NULL) {
+        // Handle allocation failure
+        fprintf(stderr, "Memory allocation failed\n");
+        return;
+    }
 
     // Read from source and write to destination
-    while ((ch = fgetc(source)) != EOF) {
-        fputc(ch, destination);
+    size_t bytesRead;
+    while ((bytesRead = fread(buffer, sizeof(char), bufferSize, source)) > 0) {
+        fwrite(buffer, sizeof(char), bytesRead, destination);
     }
+
+    // Free dynamically allocated memory
+    free(buffer);
 }
 
 void convertSBUtoPPM(FILE *sbuFile, FILE *ppmFile) {
     int width, height, numColors;
+    
 
     // Read header information from SBU file
     fscanf(sbuFile, "SBU %d %d %d", &width, &height, &numColors);
