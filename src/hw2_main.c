@@ -324,8 +324,8 @@ int main(int argc, char **argv) {
     const char* output_extension;
 
     //copy-paste
-    char* copy;
-    char* paste;
+    // char* copy;
+    // char* paste;
     
     while ((option = getopt(argc, argv, "i:o:p:r:c:")) != -1) {
         switch (option) {
@@ -364,7 +364,7 @@ int main(int argc, char **argv) {
                     pflag++;
                     p_provided++;
                 }
-                paste=optarg;
+                // paste=optarg;
 
                 break;
 
@@ -394,7 +394,7 @@ int main(int argc, char **argv) {
                     cflag++;
                     c_provided++;
                 }
-                copy = optarg;
+                // copy = optarg;
                 break;
 
             case '?':
@@ -457,11 +457,11 @@ int main(int argc, char **argv) {
         printf("Both is ppm");
         copyFile(fp1, fp2);
         
-        if (cflag==1 && pflag==1){
-            copyPastePPMtoPPM(fp1, fp2, copy, paste);
-            printf("Done");
+        // if (cflag==1 && pflag==1){
+        //     copyPastePPMtoPPM(fp1, fp2, copy, paste);
+        //     printf("Done");
             
-        }
+        // }
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "sbu")==0){
         printf("Both is SBU");
         copyFile(fp1, fp2);
