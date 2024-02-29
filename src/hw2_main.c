@@ -101,6 +101,9 @@ void convertSBUtoPPM(FILE *sbuFile, FILE *ppmFile) {
     int width_Number = 0;
     int height_Number = 1;
     while (!feof(sbuFile)) {
+        if (height_Number>height){
+            break;
+        }
         
         if (fscanf(sbuFile, "%d", &pixelIndex) != 1) {
             int count, colorIndex;
@@ -110,12 +113,13 @@ void convertSBUtoPPM(FILE *sbuFile, FILE *ppmFile) {
                 fprintf(ppmFile, "%d %d %d ", colorTable[colorIndex][0], colorTable[colorIndex][1], colorTable[colorIndex][2]);
                 width_Number++;
                 if (width_Number == width) {
-                    fprintf(ppmFile, "\n");
-                    width_Number = 0;
                     height_Number++;
                     if (height_Number>height){
                         break;
                     }
+                    fprintf(ppmFile, "\n");
+                    width_Number = 0;
+                    
                 }
             }
         } else {
