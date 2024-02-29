@@ -193,6 +193,119 @@ void convertSBUtoPPM(FILE *sbuFile, FILE *ppmFile) {
 //     }
 // }
 
+//copy-paste functions
+
+void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste) {
+    // Copy Infos
+    int copy_row, copy_col, copy_width, copy_height;
+    int paste_row, paste_col;
+    int source_width, source_height, destination_width, destination_height;
+
+    // Use proper format specifiers and address-of operators in fscanf
+    fscanf(source, "P3\n%d %d\n255", &source_width, &source_height);
+    fscanf(destination, "P3\n%d %d\n255", &destination_width, &destination_height);
+
+    // Copy Info
+    const char delimiter[] = ",";
+    char input_copy[strlen(copy) + 1];  // Use dynamic size allocation
+    strcpy(input_copy, copy);
+
+    char *token = strtok(input_copy, delimiter);
+    if (token != NULL) {
+        copy_row = atoi(token);
+    }
+    token = strtok(NULL, delimiter);
+
+    if (token != NULL) {
+        copy_col = atoi(token);
+    }
+    token = strtok(NULL, delimiter);
+
+    if (token != NULL) {
+        copy_width = atoi(token);
+    }
+    token = strtok(NULL, delimiter);
+
+    if (token != NULL) {
+        copy_height = atoi(token);
+    }
+
+    // Paste Info
+    char paste_copy[strlen(paste) + 1];  // Use dynamic size allocation
+    strcpy(paste_copy, paste);
+
+    token = strtok(paste_copy, delimiter);
+    if (token != NULL) {
+        paste_row = atoi(token);
+    }
+    token = strtok(NULL, delimiter);
+
+    if (token != NULL) {
+        paste_col = atoi(token);
+    }
+    
+    //skip the three lines
+    for (int i = 0; i < 3; i++) {
+        int c;
+        while ((c = fgetc(source)) != '\n' && c != EOF) {
+        }
+    }
+    //first n-1 rows
+    for (int i = 0; i < copy_row - 1; i++) {
+        for (int j = 0; j < source_width; j++) {
+            fseek(source, 3, SEEK_CUR);
+        }
+    }
+    // last row till we find correct column
+    for (int j = 0; j < copy_col - 1; j++) {
+        fseek(source, 3, SEEK_CUR);
+    }
+
+    int colorTable[copy_height * copy_width][3];
+
+    // copy needed rectangle
+    int k = 0;
+    for (int m = 0; m < copy_height; m++) {
+        for (int t = 0; t < copy_width; t++) {
+            fscanf(source, "%d %d %d ", &colorTable[k][0], &colorTable[k][1], &colorTable[k][2]);
+            k++;
+        }
+        for (int l = 0; l < source_width - copy_width; l++) {
+            fseek(source, 3, SEEK_CUR);
+        }
+    }
+
+    // paste rectangle to destination
+    for (int i = 0; i < 3; i++) {
+        int c;
+        while ((c = fgetc(destination)) != '\n' && c != EOF) {
+        }
+    }
+    // first n-1 rows
+    for (int i = 0; i < paste_row - 1; i++) {
+        for (int j = 0; j < destination_width; j++) {
+            fseek(destination, 3, SEEK_CUR);
+        }
+    }
+    // last row till we find correct column
+    for (int j = 0; j < paste_col - 1; j++) {
+        fseek(destination, 3, SEEK_CUR);
+    }
+
+    // paste to correct location
+    k = 0;
+    for (int m = 0; m < copy_height; m++) {
+        for (int t = 0; t < copy_width; t++) {
+            fprintf(destination, "%d %d %d ", colorTable[k][0], colorTable[k][1], colorTable[k][2]);
+            k++;
+        }
+        for (int l = 0; l < destination_width - copy_width; l++) {
+            fseek(destination, 3, SEEK_CUR);
+        }
+    }
+
+}
+
 int main(int argc, char **argv) {
     int option;
     int highest_priority = 0;
@@ -210,6 +323,10 @@ int main(int argc, char **argv) {
     const char* input_extension;
     const char* output_extension;
 
+    //copy-paste
+    char* copy;
+    char* paste;
+    
     while ((option = getopt(argc, argv, "i:o:p:r:c:")) != -1) {
         switch (option) {
             case 'i':
@@ -247,6 +364,8 @@ int main(int argc, char **argv) {
                     pflag++;
                     p_provided++;
                 }
+                paste=optarg;
+
                 break;
 
             case 'r':
@@ -275,6 +394,7 @@ int main(int argc, char **argv) {
                     cflag++;
                     c_provided++;
                 }
+                copy = optarg;
                 break;
 
             case '?':
@@ -336,6 +456,12 @@ int main(int argc, char **argv) {
     if(strcmp(input_extension, "ppm")==0 && strcmp(output_extension, "ppm")==0){
         printf("Both is ppm");
         copyFile(fp1, fp2);
+        
+        if (cflag==1 && pflag==1){
+            copyPastePPMtoPPM(fp1, fp2, copy, paste);
+            printf("Done");
+            
+        }
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "sbu")==0){
         printf("Both is SBU");
         copyFile(fp1, fp2);
