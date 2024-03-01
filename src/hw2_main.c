@@ -479,6 +479,7 @@ int main(int argc, char **argv) {
         printf("R_ARGUMENT_INVALID\n");
         exit(R_ARGUMENT_INVALID);
     }
+    exit(0);
     
     
     //PART 2
@@ -513,7 +514,7 @@ int main(int argc, char **argv) {
     
     
 
-    exit(0);
+    
     fclose(fp1);
     fclose(fp2);
     fclose(fp3);
