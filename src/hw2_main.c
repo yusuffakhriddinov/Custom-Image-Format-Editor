@@ -359,7 +359,7 @@ int main(int argc, char **argv) {
     //copy-paste
     char* copy;
     char* paste;
-    
+    exit(0);
     while ((option = getopt(argc, argv, "i:o:p:r:c:")) != -1) {
         switch (option) {
             case 'i':
@@ -479,7 +479,7 @@ int main(int argc, char **argv) {
         printf("R_ARGUMENT_INVALID\n");
         exit(R_ARGUMENT_INVALID);
     }
-    exit(0);
+    
     
     
     //PART 2
