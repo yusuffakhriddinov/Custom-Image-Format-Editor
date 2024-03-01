@@ -480,6 +480,7 @@ int main(int argc, char **argv) {
         exit(R_ARGUMENT_INVALID);
     }
     
+    
     //PART 2
     
 
@@ -516,8 +517,8 @@ int main(int argc, char **argv) {
     fclose(fp1);
     fclose(fp2);
     fclose(fp3);
-    exit(0);
-    return 1000;
+    
+    return 0;
     
 }
 
