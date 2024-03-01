@@ -404,7 +404,7 @@ int main(int argc, char **argv) {
             case 'r':
                 printf("%s", get_r_file_parameter(optarg));
                 if(optarg!=NULL){
-                    fp3 = fopen(get_r_file_parameter(optarg), "w");
+                    fp3 = fopen(get_r_file_parameter(optarg), "r");
                 }
                 
                 if (optarg == NULL || optarg[0] == '-') {
@@ -515,9 +515,6 @@ int main(int argc, char **argv) {
     
 
     exit(0);
-    
-    
-    return 0;
     fclose(fp1);
     fclose(fp2);
     fclose(fp3);
