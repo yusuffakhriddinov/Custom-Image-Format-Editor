@@ -90,21 +90,22 @@ void copyFile(FILE *source, FILE *destination) {
     free(buffer);
 }
 
+typedef struct {
+    int r, g, b;
+} RGBColor;
+
 void convertSBUtoPPM(FILE *sbuFile, FILE *ppmFile) {
     int width, height, numColors;
-    
 
     // Read header information from SBU file
     fscanf(sbuFile, "SBU %d %d %d", &width, &height, &numColors);
-    
 
     // Create a color table to store RGB triples
-    int colorTable[numColors][3];
+    RGBColor *colorTable = (RGBColor *)malloc(numColors * sizeof(RGBColor));
 
     // Read color table entries from SBU file
     for (int i = 0; i < numColors; i++) {
-        fscanf(sbuFile, "%d %d %d", &colorTable[i][0], &colorTable[i][1], &colorTable[i][2]);
-        
+        fscanf(sbuFile, "%d %d %d", &colorTable[i].r, &colorTable[i].g, &colorTable[i].b);
     }
 
     // Write PPM header to the PPM file
@@ -115,50 +116,46 @@ void convertSBUtoPPM(FILE *sbuFile, FILE *ppmFile) {
     int width_Number = 0;
     int height_Number = 1;
     while (!feof(sbuFile)) {
-        if (height_Number>height){
+        if (height_Number > height) {
             break;
         }
-        
+
         if (fscanf(sbuFile, "%d", &pixelIndex) != 1) {
             int count, colorIndex;
             fscanf(sbuFile, "*%d %d", &count, &colorIndex);
-            
+
             for (int i = 0; i < count; i++) {
-                fprintf(ppmFile, "%d %d %d ", colorTable[colorIndex][0], colorTable[colorIndex][1], colorTable[colorIndex][2]);
+                fprintf(ppmFile, "%d %d %d ", colorTable[colorIndex].r, colorTable[colorIndex].g, colorTable[colorIndex].b);
                 width_Number++;
                 if (width_Number == width) {
                     height_Number++;
-                    if (height_Number>height){
+                    if (height_Number > height) {
                         break;
                     }
                     fprintf(ppmFile, "\n");
                     width_Number = 0;
-                    
                 }
             }
         } else {
             // If pixelIndex is non-negative, use the color directly
-            fprintf(ppmFile, "%d %d %d ", colorTable[pixelIndex][0], colorTable[pixelIndex][1], colorTable[pixelIndex][2]);
+            fprintf(ppmFile, "%d %d %d ", colorTable[pixelIndex].r, colorTable[pixelIndex].g, colorTable[pixelIndex].b);
             width_Number++;
+        }
 
-        }
         if (width_Number == width) {
-                fprintf(ppmFile, "\n");
-                width_Number = 0;
-                height_Number++;
-                if (height_Number>height){
-                    break;
-                }
+            fprintf(ppmFile, "\n");
+            width_Number = 0;
+            height_Number++;
+            if (height_Number > height) {
+                break;
+            }
         }
-        
-        
     }
+
+    // Free the allocated memory for the color table
+    free(colorTable);
 }
 
-// Structure to represent RGB color
-typedef struct {
-    int r, g, b;
-} RGBColor;
 
 // Function to read PPM file and convert it to SBU format
 void convertPPMtoSBU(FILE *ppmFile, FILE *sbuFile) {
