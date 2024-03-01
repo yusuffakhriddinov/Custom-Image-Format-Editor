@@ -1,5 +1,14 @@
-#include "hw2.h"
+//#include "hw2.h"
 
+#define MISSING_ARGUMENT 1
+#define UNRECOGNIZED_ARGUMENT 2
+#define DUPLICATE_ARGUMENT 3
+#define INPUT_FILE_MISSING 4
+#define OUTPUT_FILE_UNWRITABLE 5
+#define C_ARGUMENT_MISSING 6
+#define C_ARGUMENT_INVALID 7
+#define P_ARGUMENT_INVALID 8
+#define R_ARGUMENT_INVALID 9
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -242,70 +251,38 @@ void convertPPMtoSBU(FILE *ppmFile, FILE *sbuFile) {
 }
 
 
-// void convertPPMtoSBU(FILE *ppmFile, FILE *sbuFile) {
-//     int width, height;
-//     char magicNumber[3];
-    
 
-//     // Read PPM header information
-//     fscanf(ppmFile, "P3 %d %d", &width, &height);
-
-       
-//     // Write SBU header to the SBU file
-//     fprintf(sbuFile, "SBU\n%d %d\n", width, height);
-
-//     // Create a color table to store RGB triples
-//     int colorTable[width * height][3];
-//     int numColors = 0; // Number of unique colors in the table
-
-//     // Read and process pixel data from PPM file
-//     for (int i = 0; i < width * height; i++) {
-//         int red, green, blue;
-//         fscanf(ppmFile, "%d %d %d", &red, &green, &blue);
-
-//         // Check if the color is already in the table
-//         int colorIndex = -1;
-//         for (int j = 0; j < numColors; j++) {
-//             if (colorTable[j][0] == red && colorTable[j][1] == green && colorTable[j][2] == blue) {
-//                 colorIndex = j;
-//                 break;
-//             }
-//         }
-
-//         // If not in the table, add it
-//         if (colorIndex == -1) {
-//             colorTable[numColors][0] = red;
-//             colorTable[numColors][1] = green;
-//             colorTable[numColors][2] = blue;
-//             colorIndex = numColors;
-//             numColors++;
-//         }
-
-//         fprintf(sbuFile, "%d ", colorIndex);
-//     }
-
-//     // Write the color table entries to SBU file
-//     fprintf(sbuFile, "\n%d", numColors);
-//     for (int i = 0; i < numColors; i++) {
-//         fprintf(sbuFile, " %d %d %d", colorTable[i][0], colorTable[i][1], colorTable[i][2]);
-//     }
-// }
 
 //copy-paste functions
+#define DELIMITER ","
+#define MAX_BUFFER_SIZE 256
+
+void skipLines(FILE *file, int numLines) {
+    for (int i = 0; i < numLines; i++) {
+        int c;
+        while ((c = fgetc(file)) != '\n' && c != EOF) {
+        }
+    }
+}
+
+void moveToPosition(FILE *file, int rows, int cols, int width) {
+    for (int i = 0; i < rows - 1; i++) {
+        fseek(file, 3 * width, SEEK_CUR);
+    }
+
+    fseek(file, 3 * cols, SEEK_CUR);
+}
 
 void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste) {
-    // Copy Infos
     int copy_row, copy_col, copy_width, copy_height;
     int paste_row, paste_col;
     int source_width, source_height, destination_width, destination_height;
 
-    // Use proper format specifiers and address-of operators in fscanf
     fscanf(source, "P3\n%d %d\n255", &source_width, &source_height);
     fscanf(destination, "P3\n%d %d\n255", &destination_width, &destination_height);
 
-    // Copy Info
     const char delimiter[] = ",";
-    char input_copy[strlen(copy) + 1];  // Use dynamic size allocation
+    char input_copy[strlen(copy) + 1];
     strcpy(input_copy, copy);
 
     char *token = strtok(input_copy, delimiter);
@@ -328,8 +305,7 @@ void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
         copy_height = atoi(token);
     }
 
-    // Paste Info
-    char paste_copy[strlen(paste) + 1];  // Use dynamic size allocation
+    char paste_copy[strlen(paste) + 1];
     strcpy(paste_copy, paste);
 
     token = strtok(paste_copy, delimiter);
@@ -341,67 +317,22 @@ void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
     if (token != NULL) {
         paste_col = atoi(token);
     }
-    
-    //skip the three lines
-    for (int i = 0; i < 3; i++) {
-        int c;
-        while ((c = fgetc(source)) != '\n' && c != EOF) {
-        }
-    }
-    //first n-1 rows
-    for (int i = 0; i < copy_row - 1; i++) {
-        for (int j = 0; j < source_width; j++) {
-            fseek(source, 3, SEEK_CUR);
-        }
-    }
-    // last row till we find correct column
-    for (int j = 0; j < copy_col - 1; j++) {
-        fseek(source, 3, SEEK_CUR);
-    }
+
+    skipLines(source, 3);
+    moveToPosition(source, copy_row, copy_col, source_width);
 
     int colorTable[copy_height * copy_width][3];
-
-    // copy needed rectangle
-    int k = 0;
-    for (int m = 0; m < copy_height; m++) {
-        for (int t = 0; t < copy_width; t++) {
-            fscanf(source, "%d %d %d ", &colorTable[k][0], &colorTable[k][1], &colorTable[k][2]);
-            k++;
-        }
-        for (int l = 0; l < source_width - copy_width; l++) {
-            fseek(source, 3, SEEK_CUR);
-        }
+    for (int i = 0; i < copy_height * copy_width; i++) {
+        fscanf(source, "%d %d %d ", &colorTable[i][0], &colorTable[i][1], &colorTable[i][2]);
     }
 
-    // paste rectangle to destination
-    for (int i = 0; i < 3; i++) {
-        int c;
-        while ((c = fgetc(destination)) != '\n' && c != EOF) {
-        }
-    }
-    // first n-1 rows
-    for (int i = 0; i < paste_row - 1; i++) {
-        for (int j = 0; j < destination_width; j++) {
-            fseek(destination, 3, SEEK_CUR);
-        }
-    }
-    // last row till we find correct column
-    for (int j = 0; j < paste_col - 1; j++) {
-        fseek(destination, 3, SEEK_CUR);
-    }
+    skipLines(destination, 3);
+    moveToPosition(destination, paste_row, paste_col, destination_width);
 
-    // paste to correct location
-    k = 0;
-    for (int m = 0; m < copy_height; m++) {
-        for (int t = 0; t < copy_width; t++) {
-            fprintf(destination, "%d %d %d ", colorTable[k][0], colorTable[k][1], colorTable[k][2]);
-            k++;
-        }
-        for (int l = 0; l < destination_width - copy_width; l++) {
-            fseek(destination, 3, SEEK_CUR);
-        }
+    for (int i = 0; i < copy_height * copy_width; i++) {
+        // fprintf(destination, "%d %d %d ", colorTable[i][0], colorTable[i][1], colorTable[i][2]);
+        fprintf(destination, "%d %d %d ", 0, 0, 0);
     }
-
 }
 
 int main(int argc, char **argv) {
@@ -422,8 +353,8 @@ int main(int argc, char **argv) {
     const char* output_extension;
 
     //copy-paste
-    // char* copy;
-    // char* paste;
+    char* copy;
+    char* paste;
     
     while ((option = getopt(argc, argv, "i:o:p:r:c:")) != -1) {
         switch (option) {
@@ -462,7 +393,7 @@ int main(int argc, char **argv) {
                     pflag++;
                     p_provided++;
                 }
-                // paste=optarg;
+                paste=optarg;
 
                 break;
 
@@ -492,7 +423,7 @@ int main(int argc, char **argv) {
                     cflag++;
                     c_provided++;
                 }
-                // copy = optarg;
+                copy = optarg;
                 break;
 
             case '?':
@@ -555,11 +486,11 @@ int main(int argc, char **argv) {
         printf("Both is ppm");
         copyFile(fp1, fp2);
         
-        // if (cflag==1 && pflag==1){
-        //     copyPastePPMtoPPM(fp1, fp2, copy, paste);
-        //     printf("Done");
+        if (cflag==1 && pflag==1){
+            copyPastePPMtoPPM(fp1, fp2, copy, paste);
+            printf("Done");
             
-        // }
+        }
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "sbu")==0){
         printf("Both is SBU");
         copyFile(fp1, fp2);
