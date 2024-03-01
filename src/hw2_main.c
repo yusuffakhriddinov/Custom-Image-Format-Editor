@@ -12,6 +12,7 @@
 #include <getopt.h>
 #include <bits/getopt_core.h>
 
+
 int count_numbers(char *str) {
     int count = 0;
     for (char *ptr = str; *ptr != '\0'; ++ptr) {
@@ -141,6 +142,79 @@ void convertSBUtoPPM(FILE *sbuFile, FILE *ppmFile) {
         
         
     }
+}
+
+// Structure to represent RGB color
+typedef struct {
+    int r, g, b;
+} RGBColor;
+#define MAX_COLORS 256
+// Function to read PPM file and convert it to SBU format
+void convertPPMtoSBU(FILE *ppmFile, FILE *sbuFile) {
+
+    int width, height;
+    
+    // Read PPM header
+    fscanf(ppmFile, "P3 %d %d 255",  &width, &height);
+
+    fprintf(sbuFile, "SBU\n%d %d\n", width, height);
+    
+
+    // Read and build color table
+    RGBColor colorTable[width*height];
+    int colorTableSize = 0;
+
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            RGBColor pixel;
+            fscanf(ppmFile, "%d %d %d", &pixel.r, &pixel.g, &pixel.b);
+
+            int found = 0;
+            for (int k = 0; k < colorTableSize; k++) {
+                if (colorTable[k].r == pixel.r && colorTable[k].g == pixel.g && colorTable[k].b == pixel.b) {
+                    found = 1;
+                    break;
+                }
+            }
+
+            if (!found) {
+                colorTable[colorTableSize] = pixel;
+                colorTableSize++;
+            }
+        }
+    }
+
+    // Write SBU header
+    fprintf(sbuFile, "%d\n", colorTableSize);
+
+    // Write color table
+    for (int i = 0; i < colorTableSize; i++) {
+        fprintf(sbuFile, "%d %d %d ", colorTable[i].r, colorTable[i].g, colorTable[i].b);
+    }
+
+    fprintf(sbuFile, "\n");
+
+    // Reset file pointer to read pixel data
+    fseek(ppmFile, 0, SEEK_SET);
+    fscanf(ppmFile, "P3 %*d %*d %*d"); // Skip PPM header
+
+    // Write pixel data
+    
+
+    // for (int i = 0; i < height; i++) {
+    //     for (int j = 0; j < width; j++) {
+    //         RGBColor pixel;
+    //         fscanf(ppmFile, "%d %d %d", &pixel.r, &pixel.g, &pixel.b);
+
+    //         for (int k = 0; k < colorTableSize; k++) {
+    //             if (colorTable[k].r == pixel.r && colorTable[k].g == pixel.g && colorTable[k].b == pixel.b) {
+    //                 fprintf(sbuFile, "%d ", k);
+    //                 break;
+    //             }
+    //         }
+    //     }
+    // }
+
 }
 
 
@@ -470,6 +544,7 @@ int main(int argc, char **argv) {
         convertSBUtoPPM(fp1, fp2);
     } else{
         printf("Input is ppm & output is sbu");
+        convertPPMtoSBU(fp1, fp2);
         
     }
     
