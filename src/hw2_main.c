@@ -512,11 +512,11 @@ int main(int argc, char **argv) {
     
     
 
-    exit(0);
-    return 1000;
+    //return 1000;
     fclose(fp1);
     fclose(fp2);
     fclose(fp3);
+    exit(0);
     
 }
 
