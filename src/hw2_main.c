@@ -69,6 +69,41 @@ const char *getFileExtension(const char *filename) {
     return ""; // Return an empty string if no extension is found
 }
 
+void loadSavePPM(FILE *source, FILE *destination) {
+    int width, height;
+    fscanf(source, "P3 %d %d 255", &width, &height);
+
+    // Use malloc to allocate memory for the header string
+    char *header = (char *)malloc(20);  // Assuming a maximum size for the header string
+
+    if (header == NULL) {
+        // Handle memory allocation failure
+        fprintf(stderr, "Memory allocation failed\n");
+        return;
+    }
+
+    // Write the PPM header to the dynamically allocated string
+    snprintf(header, 20, "P3\n%d %d\n255", width, height);
+
+    // Write the header to the destination file
+    fprintf(destination, "%s", header);
+
+    size_t buffer_size = 1024;
+    char *buffer = (char *)malloc(buffer_size);  // Change type to char for bytes
+    size_t bytesRead;
+
+    // Read from source and write to destination
+    while ((bytesRead = fread(buffer, 1, buffer_size, source)) > 0) {
+        fwrite(buffer, 1, bytesRead, destination);
+    }
+
+    // Free the allocated memory
+    free(buffer);
+
+    // Free the dynamically allocated memory
+    free(header);
+}
+
 void copyFile(FILE *source, FILE *destination) {
     size_t buffer_size = 1024; // You can adjust the buffer size as needed
     char *buffer = (char *)malloc(buffer_size);
@@ -263,7 +298,7 @@ void skipLines(FILE *file, int numLines) {
 }
 
 void moveToPosition(FILE *file, int rows, int cols, int width) {
-    for (int i = 0; i < rows - 1; i++) {
+    for (int i = 0; i < rows; i++) {
         fseek(file, 3 * width, SEEK_CUR);
     }
 
@@ -491,7 +526,7 @@ int main(int argc, char **argv) {
     
     if(strcmp(input_extension, "ppm")==0 && strcmp(output_extension, "ppm")==0){
         printf("Both is ppm");
-        copyFile(fp1, fp2);
+        loadSavePPM(fp1, fp2);
         
         if (cflag==1 && pflag==1){
             copyPastePPMtoPPM(fp1, fp2, copy, paste);
