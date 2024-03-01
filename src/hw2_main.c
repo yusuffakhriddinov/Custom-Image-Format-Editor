@@ -359,7 +359,7 @@ int main(int argc, char **argv) {
     //copy-paste
     char* copy;
     char* paste;
-    exit(0);
+    
     while ((option = getopt(argc, argv, "i:o:p:r:c:")) != -1) {
         switch (option) {
             case 'i':
@@ -514,7 +514,7 @@ int main(int argc, char **argv) {
     
     
 
-    
+    exit(0);
     fclose(fp1);
     fclose(fp2);
     fclose(fp3);
