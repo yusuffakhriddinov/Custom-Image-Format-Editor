@@ -318,18 +318,28 @@ void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
     skipLines(source, 3);
     moveToPosition(source, copy_row, copy_col, source_width);
 
-    int colorTable[copy_height * copy_width][3];
-    for (int i = 0; i < copy_height * copy_width; i++) {
-        fscanf(source, "%d %d %d ", &colorTable[i][0], &colorTable[i][1], &colorTable[i][2]);
+    int **colorTable = (int **)malloc(copy_height * sizeof(int *));
+    for (int i = 0; i < copy_height; i++) {
+        colorTable[i] = (int *)malloc(3 * copy_width * sizeof(int));
+        for (int j = 0; j < copy_width; j++) {
+            fscanf(source, "%d %d %d ", &colorTable[i][3 * j], &colorTable[i][3 * j + 1], &colorTable[i][3 * j + 2]);
+        }
     }
 
     skipLines(destination, 3);
     moveToPosition(destination, paste_row, paste_col, destination_width);
 
-    for (int i = 0; i < copy_height * copy_width; i++) {
-        // fprintf(destination, "%d %d %d ", colorTable[i][0], colorTable[i][1], colorTable[i][2]);
-        fprintf(destination, "%d %d %d ", 0, 0, 0);
+    for (int i = 0; i < copy_height; i++) {
+        for (int j = 0; j < copy_width; j++) {
+            fprintf(destination, "%d %d %d ", colorTable[i][3 * j], colorTable[i][3 * j + 1], colorTable[i][3 * j + 2]);
+        }
     }
+
+    // Free allocated memory
+    for (int i = 0; i < copy_height; i++) {
+        free(colorTable[i]);
+    }
+    free(colorTable);
 }
 
 int main(int argc, char **argv) {
