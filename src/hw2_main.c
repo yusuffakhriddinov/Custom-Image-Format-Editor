@@ -513,7 +513,7 @@ int main(int argc, char **argv) {
     
     
 
-    //return 1000;
+    exit(0);
     fclose(fp1);
     fclose(fp2);
     fclose(fp3);
