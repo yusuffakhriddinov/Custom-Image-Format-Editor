@@ -159,17 +159,15 @@ void convertSBUtoPPM(FILE *sbuFile, FILE *ppmFile) {
 
 // Function to read PPM file and convert it to SBU format
 void convertPPMtoSBU(FILE *ppmFile, FILE *sbuFile) {
-
     int width, height;
     
     // Read PPM header
-    fscanf(ppmFile, "P3 %d %d 255",  &width, &height);
+    fscanf(ppmFile, "P3 %d %d 255", &width, &height);
 
     fprintf(sbuFile, "SBU\n%d %d\n", width, height);
-    
 
-    // Read and build color table
-    RGBColor colorTable[width*height];
+    // Read and build color table dynamically
+    RGBColor *colorTable = (RGBColor *)malloc(width * height * sizeof(RGBColor));
     int colorTableSize = 0;
 
     for (int i = 0; i < height; i++) {
@@ -231,11 +229,10 @@ void convertPPMtoSBU(FILE *ppmFile, FILE *sbuFile) {
                 // Write the previous run if any
                 if (runLength > 1) {
                     fprintf(sbuFile, "*%d %d ", runLength, prevPixelIndex);
-                }else if(runLength==1){
+                } else if (runLength == 1) {
                     fprintf(sbuFile, "%d ", prevPixelIndex);
                 }
                 // Write the current pixel
-                
                 runLength = 1;
                 prevPixelIndex = currentPixelIndex;
             }
@@ -247,8 +244,9 @@ void convertPPMtoSBU(FILE *ppmFile, FILE *sbuFile) {
         fprintf(sbuFile, "*%d %d ", runLength, prevPixelIndex);
     }
 
+    // Free the allocated memory for the color table
+    free(colorTable);
 }
-
 
 
 
