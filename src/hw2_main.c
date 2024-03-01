@@ -148,7 +148,7 @@ void convertSBUtoPPM(FILE *sbuFile, FILE *ppmFile) {
 typedef struct {
     int r, g, b;
 } RGBColor;
-#define MAX_COLORS 256
+
 // Function to read PPM file and convert it to SBU format
 void convertPPMtoSBU(FILE *ppmFile, FILE *sbuFile) {
 
@@ -194,26 +194,50 @@ void convertPPMtoSBU(FILE *ppmFile, FILE *sbuFile) {
 
     fprintf(sbuFile, "\n");
 
+    // Write pixel data
     // Reset file pointer to read pixel data
     fseek(ppmFile, 0, SEEK_SET);
     fscanf(ppmFile, "P3 %*d %*d %*d"); // Skip PPM header
 
-    // Write pixel data
-    
+    int prevPixelIndex = -1;
+    int runLength = 0;
 
-    // for (int i = 0; i < height; i++) {
-    //     for (int j = 0; j < width; j++) {
-    //         RGBColor pixel;
-    //         fscanf(ppmFile, "%d %d %d", &pixel.r, &pixel.g, &pixel.b);
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            RGBColor pixel;
+            fscanf(ppmFile, "%d %d %d", &pixel.r, &pixel.g, &pixel.b);
 
-    //         for (int k = 0; k < colorTableSize; k++) {
-    //             if (colorTable[k].r == pixel.r && colorTable[k].g == pixel.g && colorTable[k].b == pixel.b) {
-    //                 fprintf(sbuFile, "%d ", k);
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }
+            // Find the index of the current pixel in the color table
+            int currentPixelIndex = -1;
+            for (int k = 0; k < colorTableSize; k++) {
+                if (colorTable[k].r == pixel.r && colorTable[k].g == pixel.g && colorTable[k].b == pixel.b) {
+                    currentPixelIndex = k;
+                    break;
+                }
+            }
+
+            // Check for a run of identical pixels
+            if (currentPixelIndex != -1 && runLength > 0 && currentPixelIndex == prevPixelIndex) {
+                runLength++;
+            } else {
+                // Write the previous run if any
+                if (runLength > 1) {
+                    fprintf(sbuFile, "*%d %d ", runLength, prevPixelIndex);
+                }else if(runLength==1){
+                    fprintf(sbuFile, "%d ", prevPixelIndex);
+                }
+                // Write the current pixel
+                
+                runLength = 1;
+                prevPixelIndex = currentPixelIndex;
+            }
+        }
+    }
+
+    // Write the last run if any
+    if (runLength > 0) {
+        fprintf(sbuFile, "*%d %d ", runLength, prevPixelIndex);
+    }
 
 }
 
