@@ -73,23 +73,18 @@ void loadSavePPM(FILE *source, FILE *destination) {
     int width, height;
     fscanf(source, "P3 %d %d 255", &width, &height);
 
-    // Use malloc to allocate memory for the header string
-    char *header = (char *)malloc(20);  // Assuming a maximum size for the header string
+    // Write the PPM header directly to the destination file
+    fprintf(destination, "P3\n%d %d\n255", width, height);
 
-    if (header == NULL) {
+    size_t buffer_size = 1024;
+    char *buffer = (char *)malloc(buffer_size);
+
+    if (buffer == NULL) {
         // Handle memory allocation failure
         fprintf(stderr, "Memory allocation failed\n");
         return;
     }
 
-    // Write the PPM header to the dynamically allocated string
-    snprintf(header, 20, "P3\n%d %d\n255", width, height);
-
-    // Write the header to the destination file
-    fprintf(destination, "%s", header);
-
-    size_t buffer_size = 1024;
-    char *buffer = (char *)malloc(buffer_size);  // Change type to char for bytes
     size_t bytesRead;
 
     // Read from source and write to destination
@@ -99,9 +94,6 @@ void loadSavePPM(FILE *source, FILE *destination) {
 
     // Free the allocated memory
     free(buffer);
-
-    // Free the dynamically allocated memory
-    free(header);
 }
 
 void copyFile(FILE *source, FILE *destination) {
