@@ -490,7 +490,20 @@ int main(int argc, char **argv) {
         // }
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "sbu")==0){
         printf("Both is SBU");
-        copyFile(fp1, fp2);
+         size_t buffer_size = 1024; // You can adjust the buffer size as needed
+        char *buffer = (char *)malloc(buffer_size);
+
+
+        size_t bytesRead;
+
+        // Read from source and write to destination
+        while ((bytesRead = fread(buffer, 1, buffer_size, fp1)) > 0) {
+            fwrite(buffer, 1, bytesRead, fp2);
+        }
+
+        // Free the allocated memory
+        free(buffer);
+        
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "ppm")==0){
         printf("Input is sbu & output is ppm");
         convertSBUtoPPM(fp1, fp2);
