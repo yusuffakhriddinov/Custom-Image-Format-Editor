@@ -72,14 +72,9 @@ const char *getFileExtension(const char *filename) {
 
 
 void copyFile(FILE *source, FILE *destination) {
-    size_t buffer_size = 1024; // You can adjust the buffer size as needed
+    size_t buffer_size = 1024; 
     char *buffer = (char *)malloc(buffer_size);
 
-    if (buffer == NULL) {
-        // Handle memory allocation failure
-        fprintf(stderr, "Memory allocation failed\n");
-        return;
-    }
 
     size_t bytesRead;
 
