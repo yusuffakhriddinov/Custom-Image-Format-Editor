@@ -69,32 +69,7 @@ const char *getFileExtension(const char *filename) {
     return ""; // Return an empty string if no extension is found
 }
 
-void loadSavePPM(FILE *source, FILE *destination) {
-    int width, height;
-    fscanf(source, "P3 %d %d 255", &width, &height);
 
-    // Write the PPM header directly to the destination file
-    fprintf(destination, "P3\n%d %d\n255", width, height);
-
-    size_t buffer_size = 1024;
-    char *buffer = (char *)malloc(buffer_size);
-
-    if (buffer == NULL) {
-        // Handle memory allocation failure
-        fprintf(stderr, "Memory allocation failed\n");
-        return;
-    }
-
-    size_t bytesRead;
-
-    // Read from source and write to destination
-    while ((bytesRead = fread(buffer, 1, buffer_size, source)) > 0) {
-        fwrite(buffer, 1, bytesRead, destination);
-    }
-
-    // Free the allocated memory
-    free(buffer);
-}
 
 void copyFile(FILE *source, FILE *destination) {
     size_t buffer_size = 1024; // You can adjust the buffer size as needed
@@ -518,7 +493,7 @@ int main(int argc, char **argv) {
     
     if(strcmp(input_extension, "ppm")==0 && strcmp(output_extension, "ppm")==0){
         printf("Both is ppm");
-        loadSavePPM(fp1, fp2);
+        copyFile(fp1, fp2);
         
         if (cflag==1 && pflag==1){
             copyPastePPMtoPPM(fp1, fp2, copy, paste);
