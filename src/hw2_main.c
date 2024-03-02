@@ -74,7 +74,8 @@ const char *getFileExtension(const char *filename) {
 void copyFile(FILE *source, FILE *destination) {
     size_t buffer_size = 1024; 
     char *buffer = (char *)malloc(buffer_size);
-    long originalPosition = ftell(source);
+    long originalPositionSource = ftell(source);
+    long originalPositionDestination = ftell(destination);
 
     size_t bytesRead;
 
@@ -85,7 +86,8 @@ void copyFile(FILE *source, FILE *destination) {
 
     // Free the allocated memory
     free(buffer);
-    fseek(source, originalPosition, SEEK_SET);
+    fseek(source, originalPositionSource, SEEK_SET);
+    fseek(source, originalPositionDestination, SEEK_SET);
 }
 
 typedef struct {
@@ -293,37 +295,36 @@ void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
     (void) copy;
     (void) paste;
     (void) destination;
-    int width;
-
+    int source_width;
+    
     
     
     skipLines(source, 1);
-    fscanf(source, "%d ", &width);
+    fscanf(source, "%d ", &source_width);
     skipLines(source, 2);
     
     
-    moveToPosition(source,2,9,width);
-
+    moveToPosition(source,2,9,source_width);
     int size = 1000;
     int **rectangleTable = (int **)malloc(size * sizeof(int *));
+    
+    for (int h = 0; h<3; h++){//copy_height  
+        for (int j = h*4; j < 4*(h+1); j++) { // Assuming copy_width is 4
+            rectangleTable[j] = (int *)malloc(3 * sizeof(int));
+            fscanf(source, "%d %d %d ", &rectangleTable[j][0], &rectangleTable[j][1], &rectangleTable[j][2]);
+        }
 
-    for (int j = 0; j < 2; j++) { // Assuming copy_width is 2
-        rectangleTable[j] = (int *)malloc(3 * sizeof(int));
-        fscanf(source, "%d %d %d ", &rectangleTable[j][0], &rectangleTable[j][1], &rectangleTable[j][2]);
-    }
 
-    // Printing the values of the first row
-    printf("%d %d %d ", rectangleTable[1][0], rectangleTable[1][1], rectangleTable[1][2]);
-
-    int r, g, b;
-    int currentPosition = 0;
+        int r, g, b;
+        int currentPosition = 0;
         while(fscanf(source, "%d %d %d ", &r, &g, &b) == 3){
             currentPosition++;
-            if(currentPosition==width){
+            if(currentPosition==(source_width-4)){// copy_width
                 break;
             }
+        }
     }
-    
+
     
 
 
