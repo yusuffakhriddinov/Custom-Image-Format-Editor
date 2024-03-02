@@ -368,7 +368,7 @@ int main(int argc, char **argv) {
                 break;
 
             case 'o':
-                fp2 = fopen(optarg, "r+");
+                fp2 = fopen(optarg, "w");
                 if (optarg == NULL || optarg[0] == '-') {
                     highest_priority = MISSING_ARGUMENT;
                 } else if (oflag) {
