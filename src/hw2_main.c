@@ -488,11 +488,11 @@ int main(int argc, char **argv) {
     
     
     if(strcmp(input_extension, "ppm")==0 && strcmp(output_extension, "ppm")==0){
-        if (cflag==1 && pflag==1){
+        if(cflag!=1 || pflag!=1){
+            copyFile(fp1, fp2);
+        }else{
             copyPastePPMtoPPM(fp1, fp2, copy, paste);
             printf("Done");  
-        }else{
-            copyFile(fp1, fp2);
         }
         
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "sbu")==0){
