@@ -295,20 +295,23 @@ void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
     (void) copy;
     (void) paste;
     (void) destination;
-    int source_width;
+    int source_width, source_height;
     
     
     
     skipLines(source, 1);
-    fscanf(source, "%d ", &source_width);
-    skipLines(source, 2);
+    fscanf(source, "%d %d ", &source_width, &source_height);
+    skipLines(source, 1);
+
+
+    
     
     
     moveToPosition(source,2,9,source_width);
     int size = 1000;
     int **rectangleTable = (int **)malloc(size * sizeof(int *));
     
-    for (int h = 0; h<3; h++){//copy_height  
+    for (int h = 0; h<3; h++){ //copy_height  
         for (int j = h*4; j < 4*(h+1); j++) { // Assuming copy_width is 4
             rectangleTable[j] = (int *)malloc(3 * sizeof(int));
             fscanf(source, "%d %d %d ", &rectangleTable[j][0], &rectangleTable[j][1], &rectangleTable[j][2]);
@@ -324,16 +327,7 @@ void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
             }
         }
     }
-
     
-    
-
-    // Paste Part
-    
-
-
-
-
 
     
 }
@@ -374,7 +368,7 @@ int main(int argc, char **argv) {
                 break;
 
             case 'o':
-                fp2 = fopen(optarg, "w");
+                fp2 = fopen(optarg, "r+");
                 if (optarg == NULL || optarg[0] == '-') {
                     highest_priority = MISSING_ARGUMENT;
                 } else if (oflag) {
@@ -488,11 +482,11 @@ int main(int argc, char **argv) {
     
     
     if(strcmp(input_extension, "ppm")==0 && strcmp(output_extension, "ppm")==0){
-        if(cflag!=1 || pflag!=1){
-            copyFile(fp1, fp2);
-        }else{
+        copyFile(fp1, fp2);
+        if(cflag==1 && pflag==1){
             copyPastePPMtoPPM(fp1, fp2, copy, paste);
-            printf("Done");  
+            printf("Done");
+            
         }
         
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "sbu")==0){
