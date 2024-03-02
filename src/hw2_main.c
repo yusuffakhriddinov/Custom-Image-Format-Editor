@@ -74,7 +74,7 @@ const char *getFileExtension(const char *filename) {
 void copyFile(FILE *source, FILE *destination) {
     size_t buffer_size = 1024; 
     char *buffer = (char *)malloc(buffer_size);
-
+    long originalPosition = ftell(source);
 
     size_t bytesRead;
 
@@ -85,6 +85,7 @@ void copyFile(FILE *source, FILE *destination) {
 
     // Free the allocated memory
     free(buffer);
+    fseek(source, originalPosition, SEEK_SET);
 }
 
 typedef struct {
@@ -93,6 +94,7 @@ typedef struct {
 
 void convertSBUtoPPM(FILE *sbuFile, FILE *ppmFile) {
     int width, height, numColors;
+    
 
     // Read header information from SBU file
     fscanf(sbuFile, "SBU %d %d %d", &width, &height, &numColors);
@@ -157,7 +159,7 @@ void convertSBUtoPPM(FILE *sbuFile, FILE *ppmFile) {
 // Function to read PPM file and convert it to SBU format
 void convertPPMtoSBU(FILE *ppmFile, FILE *sbuFile) {
     int width, height;
-    
+    long originalPosition = ftell(ppmFile);
     // Read PPM header
     fscanf(ppmFile, "P3 %d %d 255", &width, &height);
 
@@ -243,6 +245,7 @@ void convertPPMtoSBU(FILE *ppmFile, FILE *sbuFile) {
 
     // Free the allocated memory for the color table
     free(colorTable);
+    fseek(ppmFile, originalPosition, SEEK_SET);
 }
 
 
@@ -251,92 +254,83 @@ void convertPPMtoSBU(FILE *ppmFile, FILE *sbuFile) {
 #define DELIMITER ","
 #define MAX_BUFFER_SIZE 256
 
-void skipLines(FILE *file, int numLines) {
-    for (int i = 0; i < numLines; i++) {
-        int c;
-        while ((c = fgetc(file)) != '\n' && c != EOF) {
+
+void skipLines(FILE *file, int linesToSkip) {
+    char buffer[256];  // Adjust the buffer size as needed
+
+    for (int i = 0; i < linesToSkip; ++i) {
+        if (fgets(buffer, sizeof(buffer), file) == NULL) {
+            fprintf(stderr, "Error reading from the file.\n");
+            // Add appropriate error handling or exit the function
+            return;
         }
     }
 }
-
 void moveToPosition(FILE *file, int rows, int cols, int width) {
-    for (int i = 0; i < rows; i++) {
-        fseek(file, 3 * width, SEEK_CUR);
-    }
+    int r, g, b;
+    int currentPositionColumn = 0;
+    for (int i = 0; i < rows - 1; i++){ 
+        int currentPosition = 0;
+        while(fscanf(file, "%d %d %d ", &r, &g, &b) == 3){
+            currentPosition++;
+            if(currentPosition==width){
+                break;
+            }
+        }
 
-    fseek(file, 3 * cols, SEEK_CUR);
+    }
+    while (fscanf(file, "%d %d %d ", &r, &g, &b) == 3) {
+        currentPositionColumn++;
+
+        if(currentPositionColumn==(cols-1)){  
+            break;
+        }
+
+    }
 }
 
 void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste) {
-    int copy_row, copy_col, copy_width, copy_height;
-    int paste_row, paste_col;
-    int source_width, source_height, destination_width, destination_height;
+    (void) copy;
+    (void) paste;
+    (void) destination;
+    int width;
 
-    fscanf(source, "P3\n%d %d\n255", &source_width, &source_height);
-    fscanf(destination, "P3\n%d %d\n255", &destination_width, &destination_height);
+    
+    
+    skipLines(source, 1);
+    fscanf(source, "%d ", &width);
+    skipLines(source, 2);
+    
+    
+    moveToPosition(source,2,9,width);
 
-    const char delimiter[] = ",";
-    char input_copy[strlen(copy) + 1];
-    strcpy(input_copy, copy);
+    int size = 1000;
+    int **rectangleTable = (int **)malloc(size * sizeof(int *));
 
-    char *token = strtok(input_copy, delimiter);
-    if (token != NULL) {
-        copy_row = atoi(token);
-    }
-    token = strtok(NULL, delimiter);
-
-    if (token != NULL) {
-        copy_col = atoi(token);
-    }
-    token = strtok(NULL, delimiter);
-
-    if (token != NULL) {
-        copy_width = atoi(token);
-    }
-    token = strtok(NULL, delimiter);
-
-    if (token != NULL) {
-        copy_height = atoi(token);
+    for (int j = 0; j < 2; j++) { // Assuming copy_width is 2
+        rectangleTable[j] = (int *)malloc(3 * sizeof(int));
+        fscanf(source, "%d %d %d ", &rectangleTable[j][0], &rectangleTable[j][1], &rectangleTable[j][2]);
     }
 
-    char paste_copy[strlen(paste) + 1];
-    strcpy(paste_copy, paste);
+    // Printing the values of the first row
+    printf("%d %d %d ", rectangleTable[1][0], rectangleTable[1][1], rectangleTable[1][2]);
 
-    token = strtok(paste_copy, delimiter);
-    if (token != NULL) {
-        paste_row = atoi(token);
+    int r, g, b;
+    int currentPosition = 0;
+        while(fscanf(source, "%d %d %d ", &r, &g, &b) == 3){
+            currentPosition++;
+            if(currentPosition==width){
+                break;
+            }
     }
-    token = strtok(NULL, delimiter);
+    
+    
 
-    if (token != NULL) {
-        paste_col = atoi(token);
-    }
 
-    skipLines(source, 3);
-    moveToPosition(source, copy_row, copy_col, source_width);
 
-    int **colorTable = (int **)malloc(copy_height * sizeof(int *));
-    for (int i = 0; i < copy_height; i++) {
-        colorTable[i] = (int *)malloc(3 * copy_width * sizeof(int));
-        for (int j = 0; j < copy_width; j++) {
-            fscanf(source, "%d %d %d ", &colorTable[i][3 * j], &colorTable[i][3 * j + 1], &colorTable[i][3 * j + 2]);
-        }
-    }
 
-    skipLines(destination, 3);
-    moveToPosition(destination, paste_row, paste_col, destination_width);
 
-    for (int i = 0; i < copy_height; i++) {
-        for (int j = 0; j < copy_width; j++) {
-            fprintf(destination, "%d %d %d ", colorTable[i][3 * j], colorTable[i][3 * j + 1], colorTable[i][3 * j + 2]);
-        }
-    }
-
-    // Free allocated memory
-    for (int i = 0; i < copy_height; i++) {
-        free(colorTable[i]);
-    }
-    free(colorTable);
+    
 }
 
 int main(int argc, char **argv) {
@@ -489,14 +483,13 @@ int main(int argc, char **argv) {
     
     
     if(strcmp(input_extension, "ppm")==0 && strcmp(output_extension, "ppm")==0){
-        printf("Both is ppm");
         copyFile(fp1, fp2);
-        
         if (cflag==1 && pflag==1){
             copyPastePPMtoPPM(fp1, fp2, copy, paste);
             printf("Done");
             
         }
+        
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "sbu")==0){
         printf("Both is SBU");
         copyFile(fp1, fp2);
