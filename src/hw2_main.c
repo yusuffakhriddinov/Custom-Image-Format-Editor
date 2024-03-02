@@ -156,7 +156,7 @@ void convertSBUtoPPM(FILE *sbuFile, FILE *ppmFile) {
 }
 
 
-// Function to read PPM file and convert it to SBU format
+
 void convertPPMtoSBU(FILE *ppmFile, FILE *sbuFile) {
     int width, height;
     long originalPosition = ftell(ppmFile);
