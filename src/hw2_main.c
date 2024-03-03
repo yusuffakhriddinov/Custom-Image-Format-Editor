@@ -431,15 +431,7 @@ int main(int argc, char **argv) {
         }
 
         if (highest_priority > 0 && highest_priority != R_ARGUMENT_INVALID) {
-            printf("%s\n", highest_priority == MISSING_ARGUMENT ? "MISSING_ARGUMENT" :
-                             highest_priority == UNRECOGNIZED_ARGUMENT ? "UNRECOGNIZED_ARGUMENT" :
-                             highest_priority == DUPLICATE_ARGUMENT ? "DUPLICATE_ARGUMENT" :
-                             highest_priority == C_ARGUMENT_MISSING ? "C_ARGUMENT_MISSING" :
-                             highest_priority == C_ARGUMENT_INVALID ? "C_ARGUMENT_INVALID" :
-                             highest_priority == P_ARGUMENT_INVALID ? "P_ARGUMENT_INVALID" :
-                             highest_priority == R_ARGUMENT_INVALID ? "R_ARGUMENT_INVALID" :
-                             highest_priority == INPUT_FILE_MISSING ? "INPUT_FILE_MISSING" :
-                             highest_priority == OUTPUT_FILE_UNWRITABLE ? "OUTPUT_FILE_UNWRITABLE" : "UNKNOWN_ERROR");
+            
 
             exit(highest_priority);
         }
@@ -529,7 +521,7 @@ int main(int argc, char **argv) {
             fscanf(fp1, "%d %d %d ", &array[i][0], &array[i][1], &array[i][2]);
             fprintf(fp2, "%d %d %d ", array[i][0], array[i][1], array[i][2]);
         }
-        
+
 
         printf("%d %d ", width, height);
         
@@ -548,11 +540,10 @@ int main(int argc, char **argv) {
     
 
     exit(0);
-    return 0;
     fclose(fp1);
     fclose(fp2);
     fclose(fp3);
-    
+    return 0;
 }
 
 
