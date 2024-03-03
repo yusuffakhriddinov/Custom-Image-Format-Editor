@@ -451,7 +451,7 @@ int main(int argc, char **argv) {
         printf("R_ARGUMENT_INVALID\n");
         exit(R_ARGUMENT_INVALID);
     }
-    
+    exit(0);
     
     
     //PART 2
@@ -492,9 +492,7 @@ int main(int argc, char **argv) {
             copyPastePPMtoPPM(fp1, fp2, copy, paste);
             printf("Done");  
         }
-        fclose(fp1);
-        fclose(fp2);
-        fclose(fp3);
+        
         
         
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "sbu")==0){
@@ -520,22 +518,16 @@ int main(int argc, char **argv) {
 
 
         printf("%d %d ", width, height);
-        fclose(fp1);
-        fclose(fp2);
-        fclose(fp3);
+        
         
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "ppm")==0){
         printf("Input is sbu & output is ppm");
         convertSBUtoPPM(fp1, fp2);
-        fclose(fp1);
-        fclose(fp2);
-        fclose(fp3);
+        
     } else{
         printf("Input is ppm & output is sbu");
         convertPPMtoSBU(fp1, fp2);
-        fclose(fp1);
-        fclose(fp2);
-        fclose(fp3);
+        
         
     }
     
@@ -543,10 +535,12 @@ int main(int argc, char **argv) {
     
     
 
+    fclose(fp1);
+    fclose(fp2);
+    fclose(fp3);
     
     
-    exit(0);
-    
+    return 0;
 }
 
 
