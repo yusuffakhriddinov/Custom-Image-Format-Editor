@@ -450,6 +450,8 @@ int main(int argc, char **argv) {
     }else if (highest_priority == R_ARGUMENT_INVALID || (fp3==NULL && rflag>0)) {
         printf("R_ARGUMENT_INVALID\n");
         exit(R_ARGUMENT_INVALID);
+    }else{
+        exit(0);
     }
     
     
@@ -537,7 +539,7 @@ int main(int argc, char **argv) {
     fclose(fp2);
     fclose(fp3);
     
-    exit(0);
+    
     return 0;
 }
 
