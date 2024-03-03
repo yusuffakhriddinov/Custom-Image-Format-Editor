@@ -71,25 +71,6 @@ const char *getFileExtension(const char *filename) {
 
 
 
-void copyFile(FILE *source, FILE *destination) {
-    size_t buffer_size = 1024; 
-    char *buffer = (char *)malloc(buffer_size);
-    long originalPositionSource = ftell(source);
-    long originalPositionDestination = ftell(destination);
-
-    size_t bytesRead;
-
-    // Read from source and write to destination
-    while ((bytesRead = fread(buffer, 1, buffer_size, source)) > 0) {
-        fwrite(buffer, 1, bytesRead, destination);
-    }
-
-    // Free the allocated memory
-    free(buffer);
-    fseek(source, originalPositionSource, SEEK_SET);
-    fseek(source, originalPositionDestination, SEEK_SET);
-}
-
 typedef struct {
     int r, g, b;
 } RGBColor;
@@ -495,15 +476,63 @@ int main(int argc, char **argv) {
     
     
     if(strcmp(input_extension, "ppm")==0 && strcmp(output_extension, "ppm")==0){
-        copyFile(fp1, fp2);
+        
+        int width, height;
+        fscanf(fp1, "P3 %d %d 255", &width, &height);
+        fprintf(fp2, "P3\n%d %d\n255\n", width, height);
+
+        int size = width * height;
+
+        // Allocate memory for the array of pointers
+        int** array = (int**)malloc(size * sizeof(int**));
+
+        // Allocate memory for each row
+        for (int i = 0; i < size; i++) {
+            array[i] = (int*)malloc(3 * sizeof(int*));
+        }
+
+        // Read and write values
+        for (int i = 0; i < size; i++) {
+            fscanf(fp1, "%d %d %d ", &array[i][0], &array[i][1], &array[i][2]);
+            fprintf(fp2, "%d %d %d ", array[i][0], array[i][1], array[i][2]);
+        }
+
+        // Free the allocated memory
+        for (int i = 0; i < size; i++) {
+            free(array[i]);
+        }
+        free(array);
+
         if(cflag==1 && pflag==1){
             copyPastePPMtoPPM(fp1, fp2, copy, paste);
             printf("Done");  
         }
         
+        
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "sbu")==0){
-        printf("Both is SBU");
-        copyFile(fp1, fp2);
+        
+        int width, height, numberOfColors;
+        fscanf(fp1, "SBU %d %d %d", &width, &height, &numberOfColors);
+        fprintf(fp2, "SBU\n%d %d\n%d\n", width, height, numberOfColors);
+
+        int size = width * height;
+
+        // Allocate memory for the array of pointers
+        int** array = (int**)malloc(size * sizeof(int**));
+
+        // Allocate memory for each row
+        for (int i = 0; i < size; i++) {
+            array[i] = (int*)malloc(3 * sizeof(int*));
+        }
+
+        for (int i = 0; i < numberOfColors; i++) {
+            fscanf(fp1, "%d %d %d ", &array[i][0], &array[i][1], &array[i][2]);
+            fprintf(fp2, "%d %d %d ", array[i][0], array[i][1], array[i][2]);
+        }
+        
+
+        printf("%d %d ", width, height);
+        
         
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "ppm")==0){
         printf("Input is sbu & output is ppm");
