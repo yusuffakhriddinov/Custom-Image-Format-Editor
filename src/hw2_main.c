@@ -328,7 +328,7 @@ void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
         }
     }
     
-    fprintf(destination, "P3\n15 45\n255");
+    fprintf(destination, "P3\n15 45\n255\n10 ");
     
 }
 
@@ -482,12 +482,12 @@ int main(int argc, char **argv) {
     
     
     if(strcmp(input_extension, "ppm")==0 && strcmp(output_extension, "ppm")==0){
-        copyFile(fp1, fp2);
-        fseek(fp2, 0, SEEK_SET);
+        
         if(cflag==1 && pflag==1){
             copyPastePPMtoPPM(fp1, fp2, copy, paste);
-            printf("Done");
-            
+            printf("Done");  
+        }else{
+            copyFile(fp1, fp2);
         }
         
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "sbu")==0){
