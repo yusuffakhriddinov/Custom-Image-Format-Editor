@@ -431,8 +431,6 @@ int main(int argc, char **argv) {
         }
 
         if (highest_priority > 0 && highest_priority != R_ARGUMENT_INVALID) {
-            
-
             exit(highest_priority);
         }
     }
@@ -440,21 +438,16 @@ int main(int argc, char **argv) {
     if (iflag == 0 || oflag == 0) {
         printf("MISSING_ARGUMENT1\n");
         exit(MISSING_ARGUMENT);
-    }
-    if(fp1==NULL){
+    }else if(fp1==NULL){
         printf("INPUT_FILE_MISSING");
         exit(INPUT_FILE_MISSING);
-    }
-    if(fp2==NULL){
+    }else if(fp2==NULL){
         printf("OUTPUT_FILE_UNWRITABLE");
         exit(OUTPUT_FILE_UNWRITABLE);
-    }
-    if (p_provided == 1 && c_provided == 0) {
+    }else if (p_provided == 1 && c_provided == 0) {
         printf("C_ARGUMENT_MISSING\n");
         exit(C_ARGUMENT_MISSING);
-    }
-
-    if (highest_priority == R_ARGUMENT_INVALID || (fp3==NULL && rflag>0)) {
+    }else if (highest_priority == R_ARGUMENT_INVALID || (fp3==NULL && rflag>0)) {
         printf("R_ARGUMENT_INVALID\n");
         exit(R_ARGUMENT_INVALID);
     }
@@ -539,11 +532,12 @@ int main(int argc, char **argv) {
     
     
 
-    exit(0);
+    
     fclose(fp1);
     fclose(fp2);
     fclose(fp3);
     return 0;
+    exit(0);
 }
 
 
