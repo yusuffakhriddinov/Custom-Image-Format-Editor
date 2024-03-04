@@ -551,15 +551,30 @@ int main(int argc, char **argv) {
         }
         
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "sbu")==0){
-        printf("Both is SBU");
-        copyFile(fp1, fp2);
+        
+        if(cflag==1 && pflag==1){
+            copyPastePPMtoPPM(fp1, fp2, copy, paste);
+            printf("Done");  
+        }else{
+            copyFile(fp1, fp2);
+        }
         
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "ppm")==0){
-        printf("Input is sbu & output is ppm");
-        convertSBUtoPPM(fp1, fp2);
+        if(cflag==1 && pflag==1){
+            copyPastePPMtoPPM(fp1, fp2, copy, paste);
+            printf("Done");  
+        }else{
+            convertSBUtoPPM(fp1, fp2);
+        }
+        
     } else{
-        printf("Input is ppm & output is sbu");
-        convertPPMtoSBU(fp1, fp2);
+        if(cflag==1 && pflag==1){
+            copyPastePPMtoPPM(fp1, fp2, copy, paste);
+            printf("Done");  
+        }else{
+            convertPPMtoSBU(fp1, fp2);
+        }
+        
         
     }
     
