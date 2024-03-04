@@ -252,11 +252,6 @@ void convertPPMtoSBU(FILE *ppmFile, FILE *sbuFile) {
 
 
 
-//copy-paste functions
-#define DELIMITER ","
-#define MAX_BUFFER_SIZE 256
-
-
 void skipLines(FILE *file, int linesToSkip) {
     char buffer[256];  // Adjust the buffer size as needed
 
@@ -346,7 +341,7 @@ void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
         
     }
     
-    printf("%d %d %d ", rectangleTable[0][0], rectangleTable[0][1], rectangleTable[0][2]);
+    
     
     fseek(source, 0, SEEK_SET);
 
@@ -398,8 +393,12 @@ void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
     }
     
     
+    for (int i = 0; i < size; i++) {
+        free(rectangleTable[i]);
+    }
 
-
+    
+    free(rectangleTable);
     
 }
 
