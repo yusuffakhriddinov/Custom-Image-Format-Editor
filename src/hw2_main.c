@@ -574,13 +574,13 @@ int main(int argc, char **argv) {
     
     
     
-    if (fclose(fp1) == 0 || fclose(fp2) == 0 || fclose(fp3) == 0) {
-        exit(0);
-    }
     
 
-    
-    
+    exit(0);
+    fclose(fp1);
+    fclose(fp2);
+    fclose(fp3);
+    return 0;
 }
 
 
