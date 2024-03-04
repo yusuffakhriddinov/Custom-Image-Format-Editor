@@ -573,14 +573,14 @@ int main(int argc, char **argv) {
     }
     
     
-    
+    fclose(fp1);
+    fclose(fp2);
+    fclose(fp3);
     
 
     exit(0);
     return 0;
-    // fclose(fp1);
-    // fclose(fp2);
-    // fclose(fp3);
+    
     
 }
 
