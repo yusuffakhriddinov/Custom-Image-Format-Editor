@@ -75,7 +75,7 @@ void copyFile(FILE *source, FILE *destination) {
     size_t buffer_size = 1024; 
     char *buffer = (char *)malloc(buffer_size);
     long originalPositionSource = ftell(source);
-    long originalPositionDestination = ftell(destination);
+    
 
     size_t bytesRead;
 
@@ -87,7 +87,7 @@ void copyFile(FILE *source, FILE *destination) {
     // Free the allocated memory
     free(buffer);
     fseek(source, originalPositionSource, SEEK_SET);
-    fseek(source, originalPositionDestination, SEEK_SET);
+    
 }
 
 typedef struct {
@@ -271,7 +271,7 @@ void skipLines(FILE *file, int linesToSkip) {
 void moveToPosition(FILE *file, int rows, int cols, int width) {
     int r, g, b;
     int currentPositionColumn = 0;
-    for (int i = 0; i < rows - 1; i++){ 
+    for (int i = 0; i < rows; i++){ 
         int currentPosition = 0;
         while(fscanf(file, "%d %d %d ", &r, &g, &b) == 3){
             currentPosition++;
@@ -284,19 +284,12 @@ void moveToPosition(FILE *file, int rows, int cols, int width) {
     while (fscanf(file, "%d %d %d ", &r, &g, &b) == 3) {
         currentPositionColumn++;
 
-        if(currentPositionColumn==(cols-1)){  
+        if(currentPositionColumn==(cols)){  
             break;
         }
 
     }
-}
-
-void copyWholeArray(FILE *file, int** array, int size){
-    long originalPosition = ftell(file);
-    for (int i = 0; i<size; i++){
-        fscanf(file, "%d %d %d ", &array[i][0], &array[i][1], &array[i][2]);
-    }
-    fseek(file, originalPosition, SEEK_SET);
+    
 }
 
 void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste) {
@@ -309,37 +302,91 @@ void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
     
     skipLines(source, 1);
 
+    int copy_row, copy_col, copy_width, copy_height;
+    int paste_row, paste_col;
     
+    copy_row = 90;
+    copy_col = 10;
+    copy_width = 50;
+    copy_height = 100;
+
+    paste_row = 90;
+    paste_col = 60;
     
+    moveToPosition(source, copy_row, copy_col, source_width); //copy_row and copy_col
     
-    moveToPosition(source,2,9,source_width);
-    int size = 1000;
+    int size = 1000000;
     int **rectangleTable = (int **)malloc(size * sizeof(int *));
     
-    for (int h = 0; h<3; h++){ //copy_height  
-        for (int j = h*4; j < 4*(h+1); j++) { // Assuming copy_width is 4
+    for (int h = 0; h<copy_height; h++){ //copy_height  
+        for (int j = h*copy_width; j < copy_width*(h+1); j++) { // Assuming copy_width is 4
             rectangleTable[j] = (int *)malloc(3 * sizeof(int));
             fscanf(source, "%d %d %d ", &rectangleTable[j][0], &rectangleTable[j][1], &rectangleTable[j][2]);
         }
-
+        
 
         int r, g, b;
         int currentPosition = 0;
         while(fscanf(source, "%d %d %d ", &r, &g, &b) == 3){
             currentPosition++;
-            if(currentPosition==(source_width-4)){// copy_width
+            if(currentPosition==(source_width-copy_width)){// copy_width
                 break;
             }
         }
     }
     
+    printf("%d %d %d ", rectangleTable[0][0], rectangleTable[0][1], rectangleTable[0][2]);
+    
+    fseek(source, 0, SEEK_SET);
 
     
-    
-    
-    
 
+    int width, height;
+    fscanf(source, "P3 %d %d 255", &width, &height);
+    fprintf(destination, "P3\n%d %d\n255\n", width, height);
 
+    
+    for (int j = 0; j<paste_row; j++){//paste_row
+        for (int i=0; i<width; i++){
+            int r,g,b;
+            fscanf(source, "%d %d %d ", &r, &g, &b);
+            fprintf(destination, "%d %d %d ", r, g, b);
+            
+        }
+        fprintf(destination, "\n");
+    } //This is part is correct
+
+    for(int j = 0; j<copy_height; j++){ //height is 100
+        for (int i=0; i<paste_col; i++){
+            int r,g,b;
+            fscanf(source, "%d %d %d ", &r, &g, &b);
+            fprintf(destination, "%d %d %d ", r, g, b);
+            
+        }
+        for(int i = j*copy_width; i<copy_width*(1+j); i++){ //copy_width is 50
+            int r,g,b;
+            fscanf(source, "%d %d %d ", &r, &g, &b);
+            fprintf(destination, "%d %d %d ", rectangleTable[i][0], rectangleTable[i][1], rectangleTable[i][2]);
+            
+        }
+        for (int i = 0; i<width-copy_width-paste_col; i++){
+            int r,g,b;
+            fscanf(source, "%d %d %d ", &r, &g, &b);
+            fprintf(destination, "%d %d %d ", r, g, b);
+        }
+        fprintf(destination, "\n");
+    }
+
+    for (int j = 0; j<height-paste_row-copy_height; j++){//paste_row
+        for (int i=0; i<width; i++){
+            int r,g,b;
+            fscanf(source, "%d %d %d ", &r, &g, &b);
+            fprintf(destination, "%d %d %d ", r, g, b);
+        }
+        fprintf(destination, "\n");
+    }
+    
+    
 
 
     
@@ -495,10 +542,12 @@ int main(int argc, char **argv) {
     
     
     if(strcmp(input_extension, "ppm")==0 && strcmp(output_extension, "ppm")==0){
-        copyFile(fp1, fp2);
+        
         if(cflag==1 && pflag==1){
             copyPastePPMtoPPM(fp1, fp2, copy, paste);
             printf("Done");  
+        }else{
+            copyFile(fp1, fp2);
         }
         
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "sbu")==0){
