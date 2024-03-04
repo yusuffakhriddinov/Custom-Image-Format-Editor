@@ -543,10 +543,7 @@ void copyPasteSBUtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
 
 // copy paste SBU to SBU
 void copyPasteSBUtoSBU(FILE *source, FILE *destination, char *copy, char *paste) {
-    (void) source;
-    (void) destination;
-    (void) copy;
-    (void) paste;
+
     FILE *temp  = fopen("./tests/actual_outputs/temp.ppm", "w");
 
     copyPasteSBUtoPPM(source, temp, copy, paste);
@@ -721,27 +718,17 @@ int main(int argc, char **argv) {
         
         
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "sbu")==0){
-        printf("Both is SBU");
         if(cflag==1 && pflag==1){
-            copyPasteSBUtoSBU(fp1, fp2, copy, paste);
-
-            
+            copyPasteSBUtoSBU(fp1, fp2, copy, paste);   
         }else{
             copyFile(fp1, fp2);
         }
         
-        
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "ppm")==0){
         
         if(cflag==1 && pflag==1){
-            copyPasteSBUtoPPM(fp1, fp2, copy, paste);
-            FILE *readTempDest = fopen("./tests/actual_outputs/tempdest.ppm", "r");
-    
-            convertPPMtoSBU(readTempDest, fp2);
-
-            
-        }
-        else{
+            copyPasteSBUtoPPM(fp1, fp2, copy, paste);  
+        }else{
             convertSBUtoPPM(fp1, fp2);
         }
     } else{
