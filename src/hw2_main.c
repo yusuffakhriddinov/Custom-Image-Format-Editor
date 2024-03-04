@@ -243,8 +243,10 @@ void convertPPMtoSBU(FILE *ppmFile, FILE *sbuFile) {
     }
 
     // Write the last run if any
-    if (runLength > 0) {
+    if (runLength > 1) {
         fprintf(sbuFile, "*%d %d ", runLength, prevPixelIndex);
+    }else if (runLength == 1) {
+        fprintf(sbuFile, "%d ", prevPixelIndex);
     }
 
     // Free the allocated memory for the color table
@@ -533,7 +535,7 @@ void copyPasteSBUtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
     free(rectangleTable);
     
     fclose(readTemp);
-    remove("./tests/actual_outputs/temp.ppm");
+    
     
 
     
@@ -545,138 +547,17 @@ void copyPasteSBUtoSBU(FILE *source, FILE *destination, char *copy, char *paste)
     (void) destination;
     (void) copy;
     (void) paste;
-
-    int copy_row, copy_col, copy_width, copy_height;
-    int paste_row, paste_col;
-
-    sscanf(copy, "%d,%d,%d,%d", &copy_row, &copy_col, &copy_width, &copy_height);
-    sscanf(paste, "%d,%d", &paste_row, &paste_col);
-
-    //convert SBU to PPM
-
     FILE *temp  = fopen("./tests/actual_outputs/temp.ppm", "w");
 
-    convertSBUtoPPM(source, temp);
+    copyPasteSBUtoPPM(source, temp, copy, paste);
+
     fclose(temp);
 
-    //Open PPM file
-    FILE *readTemp = fopen("./tests/actual_outputs/temp.ppm", "r");
+    FILE *tempRead  = fopen("./tests/actual_outputs/temp.ppm", "r");
 
+    convertPPMtoSBU(tempRead, destination);
 
-    int source_width, source_height;
-    skipLines(readTemp, 1);
-    fscanf(readTemp, "%d %d ", &source_width, &source_height);
-    skipLines(readTemp, 1);
-
-    printf("%d %d ", source_height, source_width);
-    
-    
-    
-    moveToPosition(readTemp, copy_row, copy_col, source_width); //copy_row and copy_col
-    
-    int size = 1000000;
-    int **rectangleTable = (int **)malloc(size * sizeof(int *));
-
-    if((copy_row+copy_height)>source_height){
-        copy_height = source_height-copy_row;
-    }
-    if((copy_col+copy_width)>source_width){
-        copy_width = source_width - copy_col;
-    }
-    
-    for (int h = 0; h<copy_height; h++){ //copy_height  
-        for (int j = h*copy_width; j < copy_width*(h+1); j++) { // Assuming copy_width is 4
-            rectangleTable[j] = (int *)malloc(3 * sizeof(int));
-            fscanf(readTemp, "%d %d %d ", &rectangleTable[j][0], &rectangleTable[j][1], &rectangleTable[j][2]);
-            
-        }
-        
-
-        int r, g, b;
-        int currentPosition = 0;
-        while(fscanf(readTemp, "%d %d %d ", &r, &g, &b) == 3){
-            currentPosition++;
-            if(currentPosition==(source_width-copy_width)){// copy_width
-                break;
-            }
-        }
-
-        
-    }
-    
-    printf("%d %d %d ", rectangleTable[0][0], rectangleTable[0][1], rectangleTable[0][2]);
-    
-    fseek(readTemp, 0, SEEK_SET);
-
-    
-    FILE *tempDest = fopen("./tests/actual_outputs/tempdest.ppm", "w");
-
-    int width, height;
-    fscanf(readTemp, "P3 %d %d 255", &width, &height);
-    fprintf(tempDest, "P3\n%d %d\n255\n", width, height);
-
-    
-    for (int j = 0; j<paste_row; j++){//paste_row
-        for (int i=0; i<width; i++){
-            int r,g,b;
-            fscanf(readTemp, "%d %d %d ", &r, &g, &b);
-            fprintf(tempDest, "%d %d %d ", r, g, b);
-            
-        }
-        fprintf(tempDest, "\n");
-    } //This is part is correct
-
-    for(int j = 0; j<copy_height; j++){ //height is 100
-        for (int i=0; i<paste_col; i++){
-            int r,g,b;
-            fscanf(readTemp, "%d %d %d ", &r, &g, &b);
-            fprintf(tempDest, "%d %d %d ", r, g, b);
-            
-        }
-        for(int i = j*copy_width; i<copy_width*(1+j); i++){ //copy_width is 50
-            int r,g,b;
-            fscanf(readTemp, "%d %d %d ", &r, &g, &b);
-            fprintf(tempDest, "%d %d %d ", rectangleTable[i][0], rectangleTable[i][1], rectangleTable[i][2]);
-            
-        }
-        for (int i = 0; i<width-copy_width-paste_col; i++){
-            int r,g,b;
-            fscanf(readTemp, "%d %d %d ", &r, &g, &b);
-            fprintf(tempDest, "%d %d %d ", r, g, b);
-        }
-        fprintf(tempDest, "\n");
-    }
-
-    for (int j = 0; j<height-paste_row-copy_height; j++){//paste_row
-        for (int i=0; i<width; i++){
-            int r,g,b;
-            fscanf(readTemp, "%d %d %d ", &r, &g, &b);
-            fprintf(tempDest, "%d %d %d ", r, g, b);
-        }
-        fprintf(tempDest, "\n");
-    }
-    
-    
-    for (int i = 0; i < size; i++) {
-        free(rectangleTable[i]);
-    }
-
-    
-
-    FILE *readTempDest = fopen("./tests/actual_outputs/tempdest.ppm", "r");
-    convertPPMtoSBU(readTempDest, destination);
-    fclose(readTempDest);
-
-    
-    free(rectangleTable);
-
-    
-    fclose(readTemp);
-    remove("./tests/actual_outputs/temp.ppm");
-    remove("./tests/actual_outputs/tempdest.ppm");
-    
-    
-
+    fclose(tempRead);
     
 }
 
@@ -843,6 +724,8 @@ int main(int argc, char **argv) {
         printf("Both is SBU");
         if(cflag==1 && pflag==1){
             copyPasteSBUtoSBU(fp1, fp2, copy, paste);
+
+            
         }else{
             copyFile(fp1, fp2);
         }
@@ -852,8 +735,14 @@ int main(int argc, char **argv) {
         
         if(cflag==1 && pflag==1){
             copyPasteSBUtoPPM(fp1, fp2, copy, paste);
-        }else{
-             convertSBUtoPPM(fp1, fp2);
+            FILE *readTempDest = fopen("./tests/actual_outputs/tempdest.ppm", "r");
+    
+            convertPPMtoSBU(readTempDest, fp2);
+
+            
+        }
+        else{
+            convertSBUtoPPM(fp1, fp2);
         }
     } else{
         printf("Input is ppm & output is sbu");
@@ -871,9 +760,4 @@ int main(int argc, char **argv) {
     fclose(fp3);
     return 0;
 }
-
-
-
-
-
 
