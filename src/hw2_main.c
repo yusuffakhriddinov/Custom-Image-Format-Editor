@@ -293,35 +293,44 @@ void moveToPosition(FILE *file, int rows, int cols, int width) {
 }
 
 void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste) {
-    (void) copy;
-    (void) paste;
-    (void) destination;
+    
+
+    int copy_row, copy_col, copy_width, copy_height;
+    int paste_row, paste_col;
+
+    sscanf(copy, "%d,%d,%d,%d", &copy_row, &copy_col, &copy_width, &copy_height);
+    sscanf(paste, "%d,%d", &paste_row, &paste_col);
+
+
+    
+
     int source_width, source_height;
     skipLines(source, 1);
     fscanf(source, "%d %d ", &source_width, &source_height);
     
     skipLines(source, 1);
 
-    int copy_row, copy_col, copy_width, copy_height;
-    int paste_row, paste_col;
     
-    copy_row = 90;
-    copy_col = 10;
-    copy_width = 50;
-    copy_height = 100;
-
-    paste_row = 90;
-    paste_col = 60;
+    
+    
     
     moveToPosition(source, copy_row, copy_col, source_width); //copy_row and copy_col
     
     int size = 1000000;
     int **rectangleTable = (int **)malloc(size * sizeof(int *));
+
+    if((copy_row+copy_height)>source_height){
+        copy_height = source_height-copy_row;
+    }
+    if((copy_col+copy_width)>source_width){
+        copy_width = source_width - copy_col;
+    }
     
     for (int h = 0; h<copy_height; h++){ //copy_height  
         for (int j = h*copy_width; j < copy_width*(h+1); j++) { // Assuming copy_width is 4
             rectangleTable[j] = (int *)malloc(3 * sizeof(int));
             fscanf(source, "%d %d %d ", &rectangleTable[j][0], &rectangleTable[j][1], &rectangleTable[j][2]);
+            
         }
         
 
@@ -333,6 +342,8 @@ void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
                 break;
             }
         }
+
+        
     }
     
     printf("%d %d %d ", rectangleTable[0][0], rectangleTable[0][1], rectangleTable[0][2]);
