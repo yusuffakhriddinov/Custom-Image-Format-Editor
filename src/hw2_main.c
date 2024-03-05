@@ -852,25 +852,30 @@ void getLetterFromFont1(char* path, char letter, char** letterTable){
 }
 
 
-void printFontTypeOne(FILE *source, FILE *destination, char* parameter){ //font 1 size 1
+void printFontTypeOne(FILE *source, FILE *destination, char* parameter){ //font 1 size 1, PPM to PPM
     
-    char *parameters[5]; 
-    int h = 0;
+    // char *parameters[5]; 
+    // int h = 0;
 
-    char *token = strtok(parameter, ",");
-    while (token != NULL && h < 5) {
-        parameters[h] = token;
-        token = strtok(NULL, ",");
-        h++;
-    } 
+    // char *token = strtok(parameter, ",");
+    // while (token != NULL && h < 5) {
+    //     parameters[h] = token;
+    //     token = strtok(NULL, ",");
+    //     h++;
+    // } 
+    
 
-    char* word = parameters[0];
-    char* path = parameters[1];
-    int size = parameter[2] - '0';
-    int paste_row = parameter[3] - '0';
-    int paste_col = parameter[4] - '0';
+    
 
-    (void) size;
+    char word[100]; // Allocate memory for the strings
+    char path[100];
+    int size;
+    int paste_row;
+    int paste_col;
+
+    sscanf(parameter, "%99[^,],%99[^,],%d,%d,%d", word, path, &size, &paste_row, &paste_col);
+
+    
 
     
     char*** letterTable = (char***)malloc(10000 * sizeof(char**));
@@ -951,13 +956,17 @@ void printFontTypeOne(FILE *source, FILE *destination, char* parameter){ //font 
         }
         fprintf(destination, "\n");
     }
-    
 
+}
 
-    
+void printFontTypeOneSBUtoPPM(FILE *source, FILE *destination, char* parameter){
+    (void) source;
+    (void) destination;
+    (void) parameter;
 
-    
-
+    FILE *tempPrint = fopen("./tests/actual_outputs/tempprint.ppm", "w");
+    convertSBUtoPPM(source, tempPrint);
+    fclose(tempPrint);
 
 }
 
@@ -1140,6 +1149,9 @@ int main(int argc, char **argv) {
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "ppm")==0){
         if(cflag==1 && pflag==1){
             copyPasteSBUtoPPM(fp1, fp2, copy, paste);  
+        }else if(rflag==1){
+            printFontTypeOneSBUtoPPM(fp1, fp2, r_parameter);
+            
         }else{
             convertSBUtoPPM(fp1, fp2);
         }
