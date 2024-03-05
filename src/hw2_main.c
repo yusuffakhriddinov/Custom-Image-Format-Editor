@@ -897,10 +897,6 @@ void printFontTypeOne(FILE *source, FILE *destination, char* parameter){ //font 
     fscanf(source, "P3 %d %d 255", &width, &height);
     fprintf(destination, "P3\n%d %d\n255\n", width, height);
 
-    //conditions of overflow
-    if(letter_width+paste_col>=width){
-        letter_width = width - paste_col;
-    }
     
     for (int j = 0; j<paste_row; j++){//paste_row
         for (int i=0; i<width; i++){
@@ -1160,8 +1156,6 @@ int main(int argc, char **argv) {
         
         
     }
-    
-    
     
     
 
