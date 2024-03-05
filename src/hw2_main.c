@@ -576,6 +576,10 @@ void copyPastePPMtoSBU(FILE *source, FILE *destination, char *copy, char *paste)
     
 }
 
+//Printing Part
+
+
+
 int main(int argc, char **argv) {
     int option;
     int highest_priority = 0;
@@ -728,32 +732,34 @@ int main(int argc, char **argv) {
     if(strcmp(input_extension, "ppm")==0 && strcmp(output_extension, "ppm")==0){
         
         if(cflag==1 && pflag==1){
-            copyPastePPMtoPPM(fp1, fp2, copy, paste);
-             
-        }else{
-            copyFile(fp1, fp2);
+            copyPastePPMtoPPM(fp1, fp2, copy, paste);       
         }
+        if(rflag==1){
+            printf("Print");
+        }
+        copyFile(fp1, fp2);
+        
         
         
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "sbu")==0){
         if(cflag==1 && pflag==1){
             copyPasteSBUtoSBU(fp1, fp2, copy, paste);   
-        }else{
-            copyFile(fp1, fp2);
         }
+        copyFile(fp1, fp2);
+        
         
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "ppm")==0){
         if(cflag==1 && pflag==1){
             copyPasteSBUtoPPM(fp1, fp2, copy, paste);  
-        }else{
-            convertSBUtoPPM(fp1, fp2);
         }
+        convertSBUtoPPM(fp1, fp2);
+        
     } else{
         if(cflag==1 && pflag==1){
             copyPastePPMtoSBU(fp1, fp2, copy, paste);  
-        }else{
-            convertPPMtoSBU(fp1, fp2);
         }
+        convertPPMtoSBU(fp1, fp2);
+        
         
         
     }
