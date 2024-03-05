@@ -141,6 +141,7 @@ void convertSBUtoPPM(FILE *sbuFile, FILE *ppmFile) {
             // If pixelIndex is non-negative, use the color directly
             fprintf(ppmFile, "%d %d %d ", colorTable[pixelIndex].r, colorTable[pixelIndex].g, colorTable[pixelIndex].b);
             width_Number++;
+            
         }
 
         if (width_Number == width) {
@@ -853,21 +854,8 @@ void getLetterFromFont1(char* path, char letter, char** letterTable){
 
 
 void printFontTypeOne(FILE *source, FILE *destination, char* parameter){ //font 1 size 1, PPM to PPM
-    
-    // char *parameters[5]; 
-    // int h = 0;
 
-    // char *token = strtok(parameter, ",");
-    // while (token != NULL && h < 5) {
-    //     parameters[h] = token;
-    //     token = strtok(NULL, ",");
-    //     h++;
-    // } 
-    
-
-    
-
-    char word[100]; // Allocate memory for the strings
+    char word[100]; 
     char path[100];
     int size;
     int paste_row;
@@ -875,7 +863,6 @@ void printFontTypeOne(FILE *source, FILE *destination, char* parameter){ //font 
 
     sscanf(parameter, "%99[^,],%99[^,],%d,%d,%d", word, path, &size, &paste_row, &paste_col);
 
-    
 
     
     char*** letterTable = (char***)malloc(10000 * sizeof(char**));
@@ -959,14 +946,15 @@ void printFontTypeOne(FILE *source, FILE *destination, char* parameter){ //font 
 
 }
 
-void printFontTypeOneSBUtoPPM(FILE *source, FILE *destination, char* parameter){
+void printFontTypeOneSBUtoPPM(FILE *source, FILE *destination, char* r_parameter){
     (void) source;
-    (void) destination;
-    (void) parameter;
+    // FILE *tempPrint = fopen("./tests/actual_outputs/tempprint.ppm", "w");
+    // convertSBUtoPPM(source, tempPrint);
+    // fclose(tempPrint);
 
-    FILE *tempPrint = fopen("./tests/actual_outputs/tempprint.ppm", "w");
-    convertSBUtoPPM(source, tempPrint);
-    fclose(tempPrint);
+    FILE *tempPrintRead = fopen("./tests/images/desert.ppm", "r");
+    printFontTypeOne(tempPrintRead, destination, r_parameter);
+    fclose(tempPrintRead);
 
 }
 
