@@ -410,10 +410,6 @@ void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
 // Copy Paste SBU to PPM
 
 void copyPasteSBUtoPPM(FILE *source, FILE *destination, char *copy, char *paste) {
-    (void) source;
-    (void) destination;
-    (void) copy;
-    (void) paste;
 
     int copy_row, copy_col, copy_width, copy_height;
     int paste_row, paste_col;
@@ -423,13 +419,13 @@ void copyPasteSBUtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
 
     //convert SBU to PPM
 
-    FILE *temp  = fopen("./tests/actual_outputs/temp.ppm", "w");
+    FILE *temp  = fopen("./tests/actual_outputs/temp1.ppm", "w");
 
     convertSBUtoPPM(source, temp);
     fclose(temp);
 
     //Open PPM file
-    FILE *readTemp = fopen("./tests/actual_outputs/temp.ppm", "r");
+    FILE *readTemp = fopen("./tests/actual_outputs/temp1.ppm", "r");
     
 
     int source_width, source_height;
@@ -447,10 +443,16 @@ void copyPasteSBUtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
     int **rectangleTable = (int **)malloc(size * sizeof(int *));
 
     if((copy_row+copy_height)>source_height){
-        copy_height = source_height-copy_row;
+        copy_height = source_height - copy_row;
     }
     if((copy_col+copy_width)>source_width){
         copy_width = source_width - copy_col;
+    }
+    if((paste_row+copy_height)>source_height){
+        copy_height = source_height - paste_row;
+    }
+    if((paste_col+copy_width)>source_width){
+        copy_width = source_width - paste_col;
     }
     
     for (int h = 0; h<copy_height; h++){ //copy_height  
@@ -473,7 +475,7 @@ void copyPasteSBUtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
         
     }
     
-    printf("%d %d %d ", rectangleTable[0][0], rectangleTable[0][1], rectangleTable[0][2]);
+    
     
     fseek(readTemp, 0, SEEK_SET);
 
@@ -542,13 +544,14 @@ void copyPasteSBUtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
 // copy paste SBU to SBU
 void copyPasteSBUtoSBU(FILE *source, FILE *destination, char *copy, char *paste) {
 
-    FILE *temp  = fopen("./tests/actual_outputs/temp.ppm", "w");
+    (void) destination;
+    FILE *temp  = fopen("./tests/actual_outputs/temp2.ppm", "w");
 
     copyPasteSBUtoPPM(source, temp, copy, paste);
 
     fclose(temp);
 
-    FILE *tempRead  = fopen("./tests/actual_outputs/temp.ppm", "r");
+    FILE *tempRead  = fopen("./tests/actual_outputs/temp2.ppm", "r");
 
     convertPPMtoSBU(tempRead, destination);
 
@@ -557,21 +560,21 @@ void copyPasteSBUtoSBU(FILE *source, FILE *destination, char *copy, char *paste)
 }
 
 //PPM to SBU
-void copyPastePPMtoSBU(FILE *source, FILE *destination, char *copy, char *paste) {
+// void copyPastePPMtoSBU(FILE *source, FILE *destination, char *copy, char *paste) {
 
-    FILE *temp  = fopen("./tests/actual_outputs/temp.ppm", "w");
+//     FILE *temp  = fopen("./tests/actual_outputs/temp.ppm", "w");
 
-    copyPastePPMtoPPM(source, temp, copy, paste);
+//     copyPastePPMtoPPM(source, temp, copy, paste);
 
-    fclose(temp);
+//     fclose(temp);
 
-    FILE *tempRead  = fopen("./tests/actual_outputs/temp.ppm", "r");
+//     FILE *tempRead  = fopen("./tests/actual_outputs/temp.ppm", "r");
 
-    convertPPMtoSBU(tempRead, destination);
+//     convertPPMtoSBU(tempRead, destination);
 
-    fclose(tempRead);
+//     fclose(tempRead);
     
-}
+// }
 
 int main(int argc, char **argv) {
     int option;
