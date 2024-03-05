@@ -852,24 +852,27 @@ void getLetterFromFont1(char* path, char letter, char** letterTable){
 }
 
 
-void printFontTypeOne(FILE *source, FILE *destination){
-    (void)source;
-    (void)destination;
+void printFontTypeOne(FILE *source, FILE *destination, char* parameter){ //font 1 size 1
     
-    // font1 print
-    // width: 7
-    // height: 5
-    char* word = "seawolves";
-    char* path = "./tests/fonts/font1.txt";
-    int size = 1;
-    int paste_row = 100;
-    int paste_col = 150;
+    char *parameters[5]; 
+    int h = 0;
 
-    (void) word;
+    char *token = strtok(parameter, ",");
+    while (token != NULL && h < 5) {
+        parameters[h] = token;
+        token = strtok(NULL, ",");
+        h++;
+    } 
+
+    char* word = parameters[0];
+    char* path = parameters[1];
+    int size = parameter[2] - '0';
+    int paste_row = parameter[3] - '0';
+    int paste_col = parameter[4] - '0';
+
     (void) size;
-    (void) paste_row;
-    (void) paste_col;
 
+    
     char*** letterTable = (char***)malloc(10000 * sizeof(char**));
 
     int length = 0;
@@ -887,8 +890,6 @@ void printFontTypeOne(FILE *source, FILE *destination){
         letter_width = letter_width + strlen(letterTable[i][0]);
     }
     
-
-    
     
 
     
@@ -896,7 +897,10 @@ void printFontTypeOne(FILE *source, FILE *destination){
     fscanf(source, "P3 %d %d 255", &width, &height);
     fprintf(destination, "P3\n%d %d\n255\n", width, height);
 
-    
+    //conditions of overflow
+    if(letter_width+paste_col>=width){
+        letter_width = width - paste_col;
+    }
     
     for (int j = 0; j<paste_row; j++){//paste_row
         for (int i=0; i<width; i++){
@@ -984,6 +988,7 @@ int main(int argc, char **argv) {
     char* copy;
     char* paste;
     
+    char* r_parameter;
     
     while ((option = getopt(argc, argv, "i:o:p:r:c:")) != -1) {
         switch (option) {
@@ -1041,7 +1046,7 @@ int main(int argc, char **argv) {
                 } else {
                     rflag++;
                 }
-
+                r_parameter = optarg;
                 
                 break;
 
@@ -1120,7 +1125,8 @@ int main(int argc, char **argv) {
         if(cflag==1 && pflag==1){
             copyPastePPMtoPPM(fp1, fp2, copy, paste);       
         }else if(rflag==1){
-            printFontTypeOne(fp1, fp2);
+            printFontTypeOne(fp1, fp2, r_parameter);
+            
         }else{
             copyFile(fp1, fp2);
         }
