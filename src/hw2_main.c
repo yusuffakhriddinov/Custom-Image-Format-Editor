@@ -306,7 +306,6 @@ void copyPastePPMtoPPM(FILE *source, FILE *destination, char *copy, char *paste)
     int source_width, source_height;
     skipLines(source, 1);
     fscanf(source, "%d %d ", &source_width, &source_height);
-    
     skipLines(source, 1);
 
     
@@ -577,12 +576,390 @@ void copyPastePPMtoSBU(FILE *source, FILE *destination, char *copy, char *paste)
 }
 
 //Printing Part
-// void printFontTypeOne(FILE *source, FILE *destination){
-//     // font1 print
-//     // width: 7
-//     // height: 5
 
-// }
+void getLetterFromFont1(char* path, char letter, char** letterTable){
+    FILE *pathFile = fopen(path, "r");
+    int order;
+
+    if ((letter >= 'a' && letter <= 'z') || (letter >= 'A' && letter <= 'Z')) {
+        order = tolower(letter) - 'a';
+    }
+    if (order<8){
+        for (int i = 0; i<5; i++){
+            letterTable[i] = (char *)malloc(5 * sizeof(char));
+            int j;
+            for(int k = 0; k<8*order; k++){
+                fgetc(pathFile);
+            }
+            for (j = 0; j<8; j++){
+                char t;
+                t = fgetc(pathFile);
+                letterTable[i][j] = t;
+                
+            }
+            for(int k = 0; k<218-8*(1+order); k++){
+                fgetc(pathFile);
+            }
+            
+            
+        }
+    }else if (order==8){
+        for (int i = 0; i<5; i++){
+            letterTable[i] = (char *)malloc(5 * sizeof(char));
+            int j;
+            for(int k = 0; k<65; k++){
+                    fgetc(pathFile);
+            }
+            for (j = 0; j<3; j++){
+                    char t;
+                    t = fgetc(pathFile);
+                    letterTable[i][j] = t;   
+            }
+            for(int k = 0; k<218-(65+3); k++){
+                fgetc(pathFile);
+            }
+            
+        }
+    }else if(8<order && order<12){ // 8 elements
+        for (int i = 0; i<5; i++){
+            letterTable[i] = (char *)malloc(5 * sizeof(char));
+            int j;
+            for(int k = 0; k<68 + 8*(order-9); k++){
+                    fgetc(pathFile);
+            }
+            for (j = 0; j<8; j++){
+                char t;
+                t = fgetc(pathFile);
+                letterTable[i][j] = t;
+                
+            }
+            for(int k = 0; k<218-(68+8*(order-8)); k++){
+                fgetc(pathFile);
+            }
+            
+        }
+    }else if(order==12){ //M-11
+         for (int i = 0; i<5; i++){
+            letterTable[i] = (char *)malloc(5 * sizeof(char));
+            int j;
+            for(int k = 0; k<92; k++){
+                    fgetc(pathFile);
+            }
+            for (j = 0; j<11; j++){
+                    char t;
+                    t = fgetc(pathFile);
+                    letterTable[i][j] = t;   
+            }
+            for(int k = 0; k<218-(92+11); k++){
+                fgetc(pathFile);
+            }
+            
+        }
+    }else if(order==13){ //N-10
+        for (int i = 0; i<5; i++){
+            letterTable[i] = (char *)malloc(5 * sizeof(char));
+            int j;
+            for(int k = 0; k<103; k++){
+                    fgetc(pathFile);
+            }
+            for (j = 0; j<10; j++){
+                    char t;
+                    t = fgetc(pathFile);
+                    letterTable[i][j] = t;   
+            }
+            for(int k = 0; k<218-(103+10); k++){
+                fgetc(pathFile);
+            }
+            
+        }
+    }else if(order==14){ //O-9
+        for (int i = 0; i<5; i++){
+            letterTable[i] = (char *)malloc(5 * sizeof(char));
+            int j;
+            for(int k = 0; k<113; k++){
+                    fgetc(pathFile);
+            }
+            for (j = 0; j<9; j++){
+                    char t;
+                    t = fgetc(pathFile);
+                    letterTable[i][j] = t;   
+            }
+            for(int k = 0; k<218-(113+9); k++){
+                fgetc(pathFile);
+            }
+            
+        }
+    }else if(order==15){ //P-8
+        for (int i = 0; i<5; i++){
+            letterTable[i] = (char *)malloc(5 * sizeof(char));
+            int j;
+            for(int k = 0; k<122; k++){
+                    fgetc(pathFile);
+            }
+            for (j = 0; j<8; j++){
+                    char t;
+                    t = fgetc(pathFile);
+                    letterTable[i][j] = t;   
+            }
+            for(int k = 0; k<218-(122+8); k++){
+                fgetc(pathFile);
+            }
+            
+        }
+
+    }else if(order==16){ //Q-9
+        for (int i = 0; i<5; i++){
+            letterTable[i] = (char *)malloc(5 * sizeof(char));
+            int j;
+            for(int k = 0; k<130; k++){
+                    fgetc(pathFile);
+            }
+            for (j = 0; j<9; j++){
+                    char t;
+                    t = fgetc(pathFile);
+                   letterTable[i][j] = t;  
+            }
+            for(int k = 0; k<218-(130+9); k++){
+                fgetc(pathFile);
+            }
+            
+        }
+    }else if(order==17){ //R-8
+        for (int i = 0; i<5; i++){
+            letterTable[i] = (char *)malloc(5 * sizeof(char));
+            int j;
+            for(int k = 0; k<139; k++){
+                    fgetc(pathFile);
+            }
+            for (j = 0; j<8; j++){
+                    char t;
+                    t = fgetc(pathFile);
+                    letterTable[i][j] = t;   
+            }
+            for(int k = 0; k<218-(139+8); k++){
+                fgetc(pathFile);
+            }
+            
+        }
+
+    }else if(order==18){ //S-8
+        for (int i = 0; i<5; i++){
+            letterTable[i] = (char *)malloc(5 * sizeof(char));
+            int j;
+            for(int k = 0; k<147; k++){
+                    fgetc(pathFile);
+            }
+            for (j = 0; j<8; j++){
+                    char t;
+                    t = fgetc(pathFile);
+                    letterTable[i][j] = t;  
+            }
+            for(int k = 0; k<218-(147+8); k++){
+                fgetc(pathFile);
+            }
+            
+        }
+
+    }else if(order>18 && order<22){ //T-9, U, V
+        for (int i = 0; i<5; i++){
+            letterTable[i] = (char *)malloc(5 * sizeof(char));
+                int j;
+                for(int k = 0; k<155 + 9*(order-19); k++){
+                    fgetc(pathFile);
+                }
+                for (j = 0; j<9; j++){
+                    char t;
+                    t = fgetc(pathFile);
+                    letterTable[i][j] = t;  
+                }
+                for(int k = 0; k<218-(155+9*(order-18)); k++){
+                    fgetc(pathFile);
+                }
+                
+        }
+        
+
+    }else if(order==22){//W-10
+        for (int i = 0; i<5; i++){
+            letterTable[i] = (char *)malloc(5 * sizeof(char));
+            int j;
+            for(int k = 0; k<182; k++){
+                fgetc(pathFile);
+            }
+            for (j = 0; j<10; j++){
+                char t;
+                t = fgetc(pathFile);
+                letterTable[i][j] = t;   
+            }
+            for(int k = 0; k<218-(182+10); k++){
+                fgetc(pathFile);
+            }
+            
+        }
+    }else if(order==23){ //X-8
+        for (int i = 0; i<5; i++){
+            letterTable[i] = (char *)malloc(5 * sizeof(char));
+            int j;
+            for(int k = 0; k<192; k++){
+                fgetc(pathFile);
+            }
+            for (j = 0; j<8; j++){
+                char t;
+                t = fgetc(pathFile);
+                letterTable[i][j] = t;   
+            }
+            for(int k = 0; k<218-(192+8); k++){
+                fgetc(pathFile);
+            }
+            
+        }
+    }else if(order==24){ //Y-9
+        for (int i = 0; i<5; i++){
+            letterTable[i] = (char *)malloc(5 * sizeof(char));
+            int j;
+            for(int k = 0; k<200; k++){
+                    fgetc(pathFile);
+            }
+            for (j = 0; j<9; j++){
+                    char t;
+                    t = fgetc(pathFile);
+                    letterTable[i][j] = t;   
+            }
+            for(int k = 0; k<218-(200+9); k++){
+                fgetc(pathFile);
+            }
+            
+        }
+    }else if(order==25){ //X-8
+        for (int i = 0; i<5; i++){
+            letterTable[i] = (char *)malloc(5 * sizeof(char));
+            int j;
+            for(int k = 0; k<209; k++){
+                fgetc(pathFile);
+            }
+            for (j = 0; j<8; j++){
+                char t;
+                t = fgetc(pathFile);
+                letterTable[i][j] = t;   
+            }
+            for(int k = 0; k<218-(209+8); k++){
+                fgetc(pathFile);
+            }
+            
+        }
+    }
+
+}
+
+
+void printFontTypeOne(FILE *source, FILE *destination){
+    (void)source;
+    (void)destination;
+    
+    // font1 print
+    // width: 7
+    // height: 5
+    char* word = "seawolves";
+    char* path = "./tests/fonts/font1.txt";
+    int size = 1;
+    int paste_row = 100;
+    int paste_col = 150;
+
+    (void) word;
+    (void) size;
+    (void) paste_row;
+    (void) paste_col;
+
+    char*** letterTable = (char***)malloc(10000 * sizeof(char**));
+
+    int length = 0;
+    while (word[length] != '\0') {
+        length++;
+    }
+
+    
+    for (int l = 0; l < length; l++) {
+        letterTable[l] = (char **)malloc(5 * sizeof(char*));
+        getLetterFromFont1(path, word[l], letterTable[l]);
+    }
+    int letter_width = 0;
+    for (int i = 0; i<length; i++){
+        letter_width = letter_width + strlen(letterTable[i][0]);
+    }
+    
+
+    
+    
+
+    
+    int width, height;
+    fscanf(source, "P3 %d %d 255", &width, &height);
+    fprintf(destination, "P3\n%d %d\n255\n", width, height);
+
+    
+    
+    for (int j = 0; j<paste_row; j++){//paste_row
+        for (int i=0; i<width; i++){
+            int r,g,b;
+            fscanf(source, "%d %d %d ", &r, &g, &b);
+            fprintf(destination, "%d %d %d ", r, g, b);
+            fprintf(destination, "\n");
+        }
+        
+    } // This is part is correct
+
+    for(int j = 0; j<5; j++){ //5 is pixel height of word
+        for (int i=0; i<paste_col; i++){
+            int r,g,b;
+            fscanf(source, "%d %d %d ", &r, &g, &b);
+            fprintf(destination, "%d %d %d ", r, g, b);   
+        }
+        for(int i = 0; i<length; i++){ // 7 is number of letters (one letter * is one pixel)
+            int s = 0;  // Declare 's' outside the loop
+
+            while (letterTable[i][j][s] != '\0') {
+                if (letterTable[i][j][s] == '*') {
+                    int r, g, b;
+                    fscanf(source, "%d %d %d ", &r, &g, &b);
+                    fprintf(destination, "%d %d %d ", 255, 255, 255);
+                    fprintf(destination, "\n");
+                } else {
+                    int r, g, b;
+                    fscanf(source, "%d %d %d ", &r, &g, &b);
+                    fprintf(destination, "%d %d %d ", r, g, b);
+                    fprintf(destination, "\n"); 
+                }
+                s++;  // Increment 's' within the loop
+            }
+            
+        }
+        for (int k = 0; k<width - letter_width - paste_col; k++){
+                int r,g,b;
+                fscanf(source, "%d %d %d ", &r, &g, &b);
+                fprintf(destination, "%d %d %d ", r, g, b);
+                fprintf(destination, "\n");
+        }
+        
+        
+    }
+
+    for (int j = 0; j<height-paste_row-5; j++){//paste_row
+        for (int i=0; i<width; i++){
+            int r,g,b;
+            fscanf(source, "%d %d %d ", &r, &g, &b);
+            fprintf(destination, "%d %d %d ", r, g, b);
+        }
+        fprintf(destination, "\n");
+    }
+    
+
+
+    
+
+    
+
+
+}
 
 
 
@@ -606,6 +983,7 @@ int main(int argc, char **argv) {
     //copy-paste
     char* copy;
     char* paste;
+    
     
     while ((option = getopt(argc, argv, "i:o:p:r:c:")) != -1) {
         switch (option) {
@@ -741,14 +1119,11 @@ int main(int argc, char **argv) {
         
         if(cflag==1 && pflag==1){
             copyPastePPMtoPPM(fp1, fp2, copy, paste);       
+        }else if(rflag==1){
+            printFontTypeOne(fp1, fp2);
         }else{
             copyFile(fp1, fp2);
         }
-        // if(rflag==1){
-        //     printf("Print");
-        // }
-        
-        
         
         
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "sbu")==0){
