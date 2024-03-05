@@ -560,21 +560,21 @@ void copyPasteSBUtoSBU(FILE *source, FILE *destination, char *copy, char *paste)
 }
 
 //PPM to SBU
-// void copyPastePPMtoSBU(FILE *source, FILE *destination, char *copy, char *paste) {
+void copyPastePPMtoSBU(FILE *source, FILE *destination, char *copy, char *paste) {
 
-//     FILE *temp  = fopen("./tests/actual_outputs/temp.ppm", "w");
+    FILE *temp  = fopen("./tests/actual_outputs/temp3.ppm", "w");
 
-//     copyPastePPMtoPPM(source, temp, copy, paste);
+    copyPastePPMtoPPM(source, temp, copy, paste);
 
-//     fclose(temp);
+    fclose(temp);
 
-//     FILE *tempRead  = fopen("./tests/actual_outputs/temp.ppm", "r");
+    FILE *tempRead  = fopen("./tests/actual_outputs/temp3.ppm", "r");
 
-//     convertPPMtoSBU(tempRead, destination);
+    convertPPMtoSBU(tempRead, destination);
 
-//     fclose(tempRead);
+    fclose(tempRead);
     
-// }
+}
 
 int main(int argc, char **argv) {
     int option;
@@ -729,7 +729,7 @@ int main(int argc, char **argv) {
         
         if(cflag==1 && pflag==1){
             copyPastePPMtoPPM(fp1, fp2, copy, paste);
-            printf("Done");  
+             
         }else{
             copyFile(fp1, fp2);
         }
@@ -743,15 +743,18 @@ int main(int argc, char **argv) {
         }
         
     } else if(strcmp(input_extension, "sbu")==0 && strcmp(output_extension, "ppm")==0){
-        
         if(cflag==1 && pflag==1){
             copyPasteSBUtoPPM(fp1, fp2, copy, paste);  
         }else{
             convertSBUtoPPM(fp1, fp2);
         }
     } else{
-        printf("Input is ppm & output is sbu");
-        convertPPMtoSBU(fp1, fp2);
+        if(cflag==1 && pflag==1){
+            copyPastePPMtoSBU(fp1, fp2, copy, paste);  
+        }else{
+            convertPPMtoSBU(fp1, fp2);
+        }
+        
         
     }
     
