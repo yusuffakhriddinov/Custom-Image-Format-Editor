@@ -577,6 +577,12 @@ void copyPastePPMtoSBU(FILE *source, FILE *destination, char *copy, char *paste)
 }
 
 //Printing Part
+// void printFontTypeOne(FILE *source, FILE *destination){
+//     // font1 print
+//     // width: 7
+//     // height: 5
+
+// }
 
 
 
@@ -643,7 +649,7 @@ int main(int argc, char **argv) {
                 break;
 
             case 'r':
-                printf("%s", get_r_file_parameter(optarg));
+                
                 if(optarg!=NULL){
                     fp3 = fopen(get_r_file_parameter(optarg), "r");
                 }
@@ -657,6 +663,8 @@ int main(int argc, char **argv) {
                 } else {
                     rflag++;
                 }
+
+                
                 break;
 
             case 'c':
@@ -734,9 +742,9 @@ int main(int argc, char **argv) {
         if(cflag==1 && pflag==1){
             copyPastePPMtoPPM(fp1, fp2, copy, paste);       
         }
-        if(rflag==1){
-            printf("Print");
-        }
+        // if(rflag==1){
+        //     printf("Print");
+        // }
         copyFile(fp1, fp2);
         
         
