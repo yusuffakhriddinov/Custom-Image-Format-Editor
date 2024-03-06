@@ -576,18 +576,7 @@ void copyPastePPMtoSBU(FILE *source, FILE *destination, char *copy, char *paste)
     
 }
 
-
-void printFontTypeOneSBUtoPPM(FILE *source, FILE *destination, char* r_parameter){
-    (void) source;
-    // FILE *tempPrint = fopen("./tests/actual_outputs/tempprint.ppm", "w");
-    // convertSBUtoPPM(source, tempPrint);
-    // fclose(tempPrint);
-
-    FILE *tempPrintRead = fopen("./tests/images/desert.ppm", "r");
-    printFontTypeOne(tempPrintRead, destination, r_parameter);
-    fclose(tempPrintRead);
-
-}
+//Printing Part
 
 void getLetterFromFont1(char* path, char letter, char** letterTable){
     FILE *pathFile = fopen(path, "r");
@@ -975,7 +964,17 @@ void printFontTypeOne(FILE *source, FILE *destination, char* parameter){ //font 
 
 }
 
+void printFontTypeOneSBUtoPPM(FILE *source, FILE *destination, char* r_parameter){
+    (void) source;
+    // FILE *tempPrint = fopen("./tests/actual_outputs/tempprint.ppm", "w");
+    // convertSBUtoPPM(source, tempPrint);
+    // fclose(tempPrint);
 
+    FILE *tempPrintRead = fopen("./tests/images/desert.ppm", "r");
+    printFontTypeOne(tempPrintRead, destination, r_parameter);
+    fclose(tempPrintRead);
+
+}
 
 
 
