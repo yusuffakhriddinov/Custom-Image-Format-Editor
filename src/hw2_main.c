@@ -877,9 +877,6 @@ void printFontTypeOne(FILE *source, FILE *destination, char* parameter){ //font 
         letterTable[l] = (char **)malloc(5 * sizeof(char*));
         getLetterFromFont1(path, word[l], letterTable[l]);
     }
-   
-
-
     int letter_width = 0;
     for (int i = 0; i<length; i++){
         letter_width = letter_width + strlen(letterTable[i][0]);
@@ -892,11 +889,6 @@ void printFontTypeOne(FILE *source, FILE *destination, char* parameter){ //font 
     fscanf(source, "P3 %d %d 255", &width, &height);
     fprintf(destination, "P3\n%d %d\n255\n", width, height);
 
-    if(letter_width+paste_col>width){
-        letter_width = width - paste_col;
-        
-    }
-
     
     for (int j = 0; j<paste_row; j++){//paste_row
         for (int i=0; i<width; i++){
@@ -908,50 +900,40 @@ void printFontTypeOne(FILE *source, FILE *destination, char* parameter){ //font 
         
     } // This is part is correct
 
-    
-    
-
     for(int j = 0; j<5; j++){ //5 is pixel height of word
+        for (int i=0; i<paste_col; i++){
+            int r,g,b;
+            fscanf(source, "%d %d %d ", &r, &g, &b);
+            fprintf(destination, "%d %d %d ", r, g, b);   
+        }
+        for(int i = 0; i<length; i++){ // 7 is number of letters (one letter * is one pixel)
+            int s = 0;  // Declare 's' outside the loop
 
-        for (int n = 0; n<size; n++) { //size part
-            
-            for (int i=0; i<paste_col; i++){
-                int r,g,b;
-                fscanf(source, "%d %d %d ", &r, &g, &b);
-                fprintf(destination, "%d %d %d ", r, g, b);   
-            }
-            for(int i = 0; i<length; i++){ // 7 is number of letters (one letter * is one pixel)
-                int s = 0;  // Declare 's' outside the loop
-                while (letterTable[i][j][s] != '\0') {
-                    if (letterTable[i][j][s] == '*') {
-
-                        int r, g, b;
-                        fscanf(source, "%d %d %d ", &r, &g, &b);
-                        fprintf(destination, "%d %d %d ", 255, 255, 255);
-                        fprintf(destination, "\n");
-                        
-                    } else {
-                        int r, g, b;
-                        fscanf(source, "%d %d %d ", &r, &g, &b);
-                        fprintf(destination, "%d %d %d ", r, g, b);
-                        fprintf(destination, "\n"); 
-                    }
-                    s++;  // Increment 's' within the loop
-                }
-                
-            }
-            for (int k = 0; k<width - letter_width - paste_col; k++){
-                    int r,g,b;
+            while (letterTable[i][j][s] != '\0') {
+                if (letterTable[i][j][s] == '*') {
+                    int r, g, b;
+                    fscanf(source, "%d %d %d ", &r, &g, &b);
+                    fprintf(destination, "%d %d %d ", 255, 255, 255);
+                    fprintf(destination, "\n");
+                } else {
+                    int r, g, b;
                     fscanf(source, "%d %d %d ", &r, &g, &b);
                     fprintf(destination, "%d %d %d ", r, g, b);
-                    fprintf(destination, "\n");
+                    fprintf(destination, "\n"); 
+                }
+                s++;  // Increment 's' within the loop
             }
+            
+        }
+        for (int k = 0; k<width - letter_width - paste_col; k++){
+                int r,g,b;
+                fscanf(source, "%d %d %d ", &r, &g, &b);
+                fprintf(destination, "%d %d %d ", r, g, b);
+                fprintf(destination, "\n");
         }
         
+        
     }
-
-    
-
 
     for (int j = 0; j<height-paste_row-5; j++){//paste_row
         for (int i=0; i<width; i++){
@@ -1183,4 +1165,3 @@ int main(int argc, char **argv) {
     fclose(fp3);
     return 0;
 }
-
